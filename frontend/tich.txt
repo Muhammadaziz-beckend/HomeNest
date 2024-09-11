@@ -1,0 +1,7 @@
+1. Создание проекта с помощью Create React App:
+	npx create-react-app my-app ./   (my-app - имя фаела)
+2.Запуск проекта:
+	cd my-app
+	npm start
+		Приложение откроется в браузере по умолчанию по адресу http://localhost:3000
+
