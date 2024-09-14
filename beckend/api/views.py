@@ -3,10 +3,11 @@ from django.shortcuts import render
 from django.db import models
 from django.db.models import Q
 from django.core.paginator import Paginator
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from .filter import FilterHome
+from api.auth.permissions import Reade_or_Post
 
 from main.models import (
     House,
@@ -38,9 +39,10 @@ from .clone import clone_house
 
 
 @api_view(["GET", "POST"])
+@permission_classes([Reade_or_Post])
 def houses_list(req):
     if req.method == "POST":
-        # clone_house(1,100) #для клонирования
+        # clone_house(1,220) #для клонирования
         serializer = HousesSerializer(data=req.data, context={"request": req})
 
         if serializer.is_valid():
@@ -67,7 +69,7 @@ def houses_list(req):
     ordering = []  # надо сделать сортировку
 
     page = req.GET.get("page", 1)
-    page_size = req.GET.get("limit", 6)
+    page_size = req.GET.get("limit", 7)
 
     paginator = Paginator(houses, page_size)
     count = houses.count()
@@ -76,10 +78,10 @@ def houses_list(req):
 
     serializer = HousesSerializer(houses, many=True, context={"request": req})
 
-    # return Response(serializer.data)
+    # return Response(serializer.data) # без пагинации
     return Response(
         {
-            "page": page,
+            "page": int(page),
             "page_size": page_size,
             "page_count": paginator.num_pages,
             "count": count,
@@ -89,6 +91,7 @@ def houses_list(req):
 
 
 @api_view(["GET", "PATCH"])
+@permission_classes([Reade_or_Post])
 def detail_house(req, id):
     house = get_object_or_404(House, id=id)
 
@@ -109,6 +112,7 @@ def detail_house(req, id):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([Reade_or_Post])
 def cite_list(req):
     cites = City.objects.all()
 
@@ -192,6 +196,7 @@ def house_rules_list(req):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([Reade_or_Post])
 def book_register_list(req):
     house_rules = BookRegister.objects.all()
 

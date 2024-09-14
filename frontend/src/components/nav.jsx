@@ -10,9 +10,12 @@ const Nav = ({ onFiltersUpdate }) => {
         try {
             let getResJson = await (await fetch(url)).json();
 
+            console.log(getResJson);
+            
             if (value) {
-                getResJson = getResJson.filter(i => i.id == value);
+                getResJson = getResJson.filter(i => i.cite  == value);
             }
+            console.log(getResJson);
 
             const element = ref.current;
             if (element) {
@@ -39,7 +42,8 @@ const Nav = ({ onFiltersUpdate }) => {
     }, []);
 
     const handleCityChange = async (event) => {
-        const idValue = event.target.value;
+        const idValue = Number(event.target.value);
+        
         setSelectValue(idValue);
         if (!idValue) {
             regionRef.current.innerHTML = '<option value="">Выберите Город</option>';

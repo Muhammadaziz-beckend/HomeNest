@@ -1,5 +1,6 @@
 from django.db import models
 from django_resized import ResizedImageField
+from account.models import User
 
 # Дата
 class DateModelAbstract(models.Model):
@@ -159,7 +160,7 @@ class Kitchen_equipment(ImageDes):
         verbose_name = "кухонное оборудование"
         verbose_name_plural = "кухонное оборудовании"
 
-
+from django.utils.translation import gettext_lazy as _
 # Оснащение двора
 class Yard_equipment(ImageDes):
     name = models.CharField(verbose_name=("Оснащение двора"), max_length=50)
@@ -174,6 +175,7 @@ class Yard_equipment(ImageDes):
 
 class House(DateModelAbstract):
     # дом
+    user = models.ForeignKey(User,models.CASCADE,related_name='user_room',verbose_name=_('Владелец'))
     room_type = models.ForeignKey(
         "Room_Type",
         models.SET_NULL,

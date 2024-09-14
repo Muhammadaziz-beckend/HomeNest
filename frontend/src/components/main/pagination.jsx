@@ -25,13 +25,5 @@ export default function BasicPagination({ page, cuntPage, setPage, refHome }) {
           color="secondary"
         />
       </Stack>) : ''}
-      {/* <Stack style={{ margin: 'auto' }} spacing={2}>
-        <Pagination
-          count={cuntPage}
-          page={Number(page)}
-          onChange={handleChange}
-          color="secondary"
-        />
-      </Stack> */}
     </>);
 }

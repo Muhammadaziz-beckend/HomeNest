@@ -160,6 +160,7 @@ class HousesSerializer(serializers.ModelSerializer):
             "kitchen_equipment",
             "yard_equipment",
             "bedrooms",
+            'accommodation_options',
             "number_of_double_beds",
             "number_of_separate_beds",
             "total_area",

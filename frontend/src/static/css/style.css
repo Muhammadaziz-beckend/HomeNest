@@ -123,6 +123,11 @@ a {
 }
 
 
+@media screen and  {
+    
+}
+
+
 .nav {
     margin-top: 7rem;
 
@@ -172,6 +177,7 @@ a {
                 }
 
                 button[type='submit'] {
+                    font-family: var(--Roboto);
                     cursor: pointer;
                     color: #FFFFFF;
                     padding: 17px 65px;
@@ -180,15 +186,18 @@ a {
                     font-weight: 700;
                     line-height: 16px;
                     white-space: nowrap;
+                    transition: all .6s ease-out;
 
                     border-radius: 5px;
                     border: none;
                     box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.3);
                     background: linear-gradient(90.00deg, rgb(3, 155, 229), rgb(7, 110, 205) 100%);
+
+                    &:hover {
+                        transform: scale(1.1);
+                    }
                 }
             }
-
-
         }
     }
 }
@@ -551,6 +560,18 @@ a {
                                     line-height: 16px;
 
                                     background-color: #FFFFFF;
+                                    transition: all .6s ease;
+
+                                    &:hover {
+                                        color: rgb(255, 255, 255);
+                                        box-shadow: 0px 10px 20px 0px rgba(3, 155, 229, 0.2);
+                                        background: rgb(3, 155, 229);
+                                    }
+
+                                    &:active {
+                                        color: rgb(255, 255, 255);
+                                        background: rgb(3, 155, 229);
+                                    }
                                 }
 
                                 &.last {

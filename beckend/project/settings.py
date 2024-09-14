@@ -43,11 +43,14 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_cleanup',
+    'rest_framework.authtoken',
     'corsheaders',
     'django_resized',
+    "phonenumber_field",
 
     # apps
-    'main'
+    'main',
+    'account'
 ]
 
 MIDDLEWARE = [
@@ -119,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bishkek'
 
 USE_I18N = True
 
@@ -141,7 +144,17 @@ MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {}
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -149,3 +162,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+AUTH_USER_MODEL = 'account.User'

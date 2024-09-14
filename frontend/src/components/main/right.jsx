@@ -9,6 +9,7 @@ const Right = ({ props, refHome }) => {
     const [cite, setCite] = useState([])
     const [region, setRegion] = useState([])
     const [inRoom, setInRoom] = useState([])
+    const [accommodationOptions,setAccommodationOptions] = useState([])
 
     // paginator
     const [page, setPage] = useState(1)
@@ -19,6 +20,7 @@ const Right = ({ props, refHome }) => {
         async function fetchData() {
             try {
                 const getHouseAll = async (url, setData, data = true) => {
+                    debugger;
                     const resJson = await (await fetch(url)).json();
 
                     if (data) {
@@ -56,6 +58,7 @@ const Right = ({ props, refHome }) => {
                 await getHouseAll('http://127.0.0.1:8000/api/v1/cite/', setCite, false);
                 await getHouseAll('http://127.0.0.1:8000/api/v1/region/', setRegion, false);
                 await getHouseAll('http://127.0.0.1:8000/api/v1/in-room/', setInRoom, false);
+                await getHouseAll('http://127.0.0.1:8000/api/v1/accommodation-options/', setAccommodationOptions, false);
             } catch (error) {
                 console.error("Error fetching data: ", error);
             }
@@ -83,6 +86,8 @@ const Right = ({ props, refHome }) => {
                             <p> Город-{cite.find(item => item?.id == i?.city)?.name || "Неизвестный город"},<br />
                                 {region.find(item => item?.id == i?.city)?.name || "Неизвестная область"}ская Область,<br />
                                 {i?.address} улица, {i?.street_number}
+                                <br />
+                                {accommodationOptions?.find(item => item?.id == i?.accommodation_options)?.name}
                             </p>
 
                             <span>{i?.total_area} м2 | {i?.bedrooms} спальня | {i?.number_of_double_beds + i?.number_of_separate_beds} кровать  </span>

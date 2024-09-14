@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('in-the-territory/', views.in_the_territory_list),
     path('houses/<int:id>/', views.detail_house),
     path('accommodation-options/', views.accommodation_options_list),
+    path('auth/',include('api.auth.urls')),
 ]
