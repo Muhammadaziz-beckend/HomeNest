@@ -1,5 +1,5 @@
 import pprint
-import django_filters
+from django_filters import rest_framework as django_filters 
 from main.models import House
 
 
@@ -39,7 +39,6 @@ class FilterHome(django_filters.FilterSet):
     def filter_room_type(self, queryset, name, value):
 
         queryset = House.objects.filter(room_type=value)
-        pprint.pprint(queryset)
 
         return queryset
 

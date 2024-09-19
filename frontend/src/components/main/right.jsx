@@ -20,7 +20,7 @@ const Right = ({ props, refHome }) => {
         async function fetchData() {
             try {
                 const getHouseAll = async (url, setData, data = true) => {
-                    debugger;
+                    
                     const resJson = await (await fetch(url)).json();
 
                     if (data) {

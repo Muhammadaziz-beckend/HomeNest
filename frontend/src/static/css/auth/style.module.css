@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+    font-family: "Inter", sans-serif;
+}
+
+.aside {
+    margin-top: 80px;
+}
+
+.my_account {
+
+    margin-bottom: 32px;
+    padding: 0px 16px;
+
+    color: rgb(16, 16, 16);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 160%;
+    letter-spacing: 1%;
+    text-align: left;
+
+    box-sizing: border-box;
+
+    /* 3 grey */
+    border-bottom: 1px solid rgb(229, 229, 229);
+}
+
+
+.input {
+
+    margin-top: 8px;
+
+    outline: none;
+    border: none;
+    padding: 16px;
+    border-radius: 10px;
+    background: rgb(248, 248, 248);
+    width: 100%;
+}
+
+.last_first_name {
+
+    display: flex;
+    gap: 24px;
+}
+
+.label {}
+
+.button_submit {
+    color: #FFF;
+    cursor: pointer;
+
+    width: max-content;
+    padding: 16px 80px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: rgb(245, 117, 32);
+
+    img {
+
+        width: 24px;
+        background-color: #ffffff00;
+    }
+}
+
+
+.h3 {
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 123%;
+    letter-spacing: 5%;
+    text-align: left;
+
+    margin-bottom: 32px;
+}
+
+
+.container {
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0px 40px;
+}
+
+
+.main_items {
+
+    display: flex;
+    gap: 5rem;
+}
+
+.aside_nav_ul {
+
+    display: flex;
+    flex-direction: column;
+}
+
+.text_li {
+
+    color: rgb(16, 16, 16);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 160%;
+    letter-spacing: 0%;
+    text-align: left;
+
+    padding: 16px;
+
+    background-color: #ffffff00;
+    border: none;
+
+    transition: all .6s ease;
+
+    &.active {
+        color: rgb(255, 255, 255);
+        border-radius: 10px;
+        background: rgb(245, 117, 32);
+    }
+}

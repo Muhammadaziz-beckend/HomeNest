@@ -3,11 +3,12 @@ from django.shortcuts import render
 from django.db import models
 from django.db.models import Q
 from django.core.paginator import Paginator
-from rest_framework.decorators import api_view,permission_classes
-from rest_framework.generics import get_object_or_404
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import get_object_or_404, GenericAPIView
 from rest_framework.response import Response
 from .filter import FilterHome
 from api.auth.permissions import Reade_or_Post
+from rest_framework.mixins import ListModelMixin
 
 from main.models import (
     House,
@@ -36,58 +37,98 @@ from .serializers import (
 )
 from rest_framework.status import *
 from .clone import clone_house
+from .pagination import PaginatorClass
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework.backends import DjangoFilterBackend
 
 
-@api_view(["GET", "POST"])
-@permission_classes([Reade_or_Post])
-def houses_list(req):
-    if req.method == "POST":
-        # clone_house(1,220) #для клонирования
-        serializer = HousesSerializer(data=req.data, context={"request": req})
+class ListCreateHouses(GenericAPIView):
+    queryset = House.objects.all()
+    serializer_class = HousesSerializer
+    lookup_field = "id"
+    search_fields = [
+        "room_type",
+        "city",
+        "is_elevator",
+    ]
+    filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
+    ordering = ["price", "address", "date_add"]
+    filter_class = FilterHome
+    pagination_class = PaginatorClass
+    permission_classes = [Reade_or_Post]
 
-        if serializer.is_valid():
-            house = serializer.save()
-            resat_post = HousesSerializer(house, context={"request": req})
-            return Response(resat_post.data, status=HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        count = self.get_queryset().count()
+        houses = self.filter_class(request.GET,self.get_queryset())
+        if houses.is_valid():
+            houses = houses.qs
+        else:
+            houses = self.get_queryset()
+        pagination = self.pagination_class()
+        pagination_houses = pagination.paginate_queryset(houses,request,self)
 
-    houses = House.objects.all()
-
-    scorch = req.GET.get("scorch")
-
-    if scorch:
-        houses.filter(
-            Q(address__icontains=scorch)
-            | Q(price=scorch)
-            | Q(descriptions1__icontains=scorch)
+        serializer = self.get_serializer(pagination_houses, many=True)
+        return Response(
+            {
+                "page": int(pagination.page.number),
+                "page_size": pagination.page.paginator.per_page,
+                "page_count": pagination.page.paginator.num_pages,
+                "count": count,
+                "data": serializer.data,
+            }
         )
 
-    filter = FilterHome(data=req.GET,request=houses)
 
-    houses = filter.qs
+# @api_view(["GET", "POST"])
+# @permission_classes([Reade_or_Post])
+# def houses_list(req):
+    # if req.method == "POST":
+    #     # clone_house(1,220) #для клонирования
+    #     serializer = HousesSerializer(data=req.data, context={"request": req})
 
-    ordering = []  # надо сделать сортировку
+    #     if serializer.is_valid():
+    #         house = serializer.save()
+    #         resat_post = HousesSerializer(house, context={"request": req})
+    #         return Response(resat_post.data, status=HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    page = req.GET.get("page", 1)
-    page_size = req.GET.get("limit", 7)
+    # houses = House.objects.all()
 
-    paginator = Paginator(houses, page_size)
-    count = houses.count()
+    # scorch = req.GET.get("scorch")
 
-    houses = paginator.get_page(page)
+    # if scorch:
+    #     houses.filter(
+    #         Q(address__icontains=scorch)
+    #         | Q(price=scorch)
+    #         | Q(descriptions1__icontains=scorch)
+    #     )
 
-    serializer = HousesSerializer(houses, many=True, context={"request": req})
+    # filter = FilterHome(data=req.GET, request=houses)
 
-    # return Response(serializer.data) # без пагинации
-    return Response(
-        {
-            "page": int(page),
-            "page_size": page_size,
-            "page_count": paginator.num_pages,
-            "count": count,
-            "data": serializer.data,
-        }
-    )
+    # houses = filter.qs
+
+    # ordering = []  # надо сделать сортировку
+
+    # page = req.GET.get("page", 1)
+    # page_size = req.GET.get("limit", 7)
+
+    # paginator = Paginator(houses, page_size)
+    # count = houses.count()
+
+    # houses = paginator.get_page(page)
+
+    # serializer = HousesSerializer(houses, many=True, context={"request": req})
+
+    # # return Response(serializer.data) # без пагинации
+    # return Response(
+    #     {
+    #         "page": int(page),
+    #         "page_size": page_size,
+    #         "page_count": paginator.num_pages,
+    #         "count": count,
+    #         "data": serializer.data,
+    #     }
+    # )
 
 
 @api_view(["GET", "PATCH"])
@@ -128,53 +169,95 @@ def cite_list(req):
     return Response(serializer.data)
 
 
-@api_view(["GET"])
-def region_list(req):
-    region = Region.objects.all()
+class ListRegion(GenericAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
 
-    serializer = RegionSerializer(region, context={"request": req}, many=True)
+    def get(self,request,*args, **kwargs):
+        region = self.get_queryset()
 
-    return Response(serializer.data)
+        serializer = self.get_serializer(region,context={"request": request}, many=True)
 
-
-@api_view(["GET"])
-def room_type_list(req):
-    room_type: Room_Type = Room_Type.objects.all()
-
-    serializer = Room_TypeSerializer(room_type, context={"request": req}, many=True)
-
-    return Response(serializer.data)
+        return Response(serializer.data)
 
 
-@api_view()
-def accommodation_options_list(req):
-    accommodation_options: models = Accommodation_options.objects.all()
+# @api_view(["GET"])
+# def region_list(req):
+#     region = Region.objects.all()
 
-    serializer = Accommodation_optionsSerializer(
-        accommodation_options, many=True, context={"request": req}
-    )
+#     serializer = RegionSerializer(region, context={"request": req}, many=True)
 
-    return Response(serializer.data)
+#     return Response(serializer.data)
 
 
-@api_view()
-def in_room_list(req):
-    in_room = In_room.objects.all()
+# @api_view(["GET"])
+# def room_type_list(req):
+#     room_type = Room_Type.objects.all()
 
-    serializer = In_roomSerializer(in_room, many=True, context={"request": req})
+#     serializer = Room_TypeSerializer(room_type, context={"request": req}, many=True)
 
-    return Response(serializer.data)
+#     return Response(serializer.data)
 
 
-@api_view()
-def in_the_territory_list(req):
-    in_the_territory = In_the_territory.objects.all()
+class ListRoom_type(ListModelMixin,GenericAPIView):
+    queryset = Room_Type.objects.all()
+    serializer_class = Room_TypeSerializer
 
-    serializer = In_the_territorySerializer(
-        in_the_territory, many=True, context={"request": req}
-    )
+    def get(self,request,*args, **kwargs):
+        return self.list(request,*args, **kwargs)
 
-    return Response(serializer.data)
+
+# @api_view()
+# def accommodation_options_list(req):
+#     accommodation_options: models = Accommodation_options.objects.all()
+
+#     serializer = Accommodation_optionsSerializer(
+#         accommodation_options, many=True, context={"request": req}
+#     )
+
+#     return Response(serializer.data)
+
+
+class ListAccommodation_options(ListModelMixin,GenericAPIView):
+    queryset = Accommodation_options.objects.all()
+    serializer_class = Accommodation_optionsSerializer
+
+    def get(self,request,*args, **kwargs):
+        return self.list(request,*args, **kwargs)
+
+
+# @api_view()
+# def in_room_list(req):
+#     in_room = In_room.objects.all()
+
+#     serializer = In_roomSerializer(in_room, many=True, context={"request": req})
+
+#     return Response(serializer.data)
+
+class ListIn_room(ListModelMixin,GenericAPIView):
+    queryset = In_room.objects.all()
+    serializer_class = In_roomSerializer
+
+    def get(self,request,*args, **kwargs):
+        return self.list(request,*args, **kwargs)
+
+
+# @api_view()
+# def in_the_territory_list(req):
+#     in_the_territory = In_the_territory.objects.all()
+
+#     serializer = In_the_territorySerializer(
+#         in_the_territory, many=True, context={"request": req}
+#     )
+
+#     return Response(serializer.data)
+
+class ListIn_the_territory(ListModelMixin,GenericAPIView):
+    queryset = In_the_territory.objects.all()
+    serializer_class = In_the_territorySerializer
+
+    def get(self,request,*args, **kwargs):
+        return self.list(request,*args, **kwargs)
 
 
 @api_view()

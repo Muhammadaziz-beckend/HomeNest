@@ -7,20 +7,31 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+class UpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            "email",  # +
+            "last_name",
+            "first_name",
+        ]
+
+
 class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = [
-            "phone",
-            "password",
-            "email",
+            "phone",  # +
+            "password",  # +
+            "email",  # +
             "last_name",
             "first_name",
         ]
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
+        password = validated_data.pop("password")
 
         user = User(**validated_data)
 
@@ -29,7 +40,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
-    
+
 
 class ProfileUserSerializer(serializers.ModelSerializer):
 

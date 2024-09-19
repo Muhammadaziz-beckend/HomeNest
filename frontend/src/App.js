@@ -5,7 +5,12 @@ import Nav from './components/nav.jsx';
 import Main from './main.jsx';
 import DetailHome from './components/detail/homeDetail.jsx';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useState,useRef } from 'react';
+import { useState, useRef } from 'react';
+import Login from './auth/login.jsx'
+import Register from './auth/register.jsx'
+import History from './auth/components/history.jsx'
+import SetPassword from './auth/components/set_password.jsx'
+import AuthProfile from './auth/auth.jsx'
 
 function App() {
   const [filters, setFilters] = useState({
@@ -29,7 +34,7 @@ function App() {
     scrollToHomes(); // Прокручиваем после обновления фильтров
   };
 
-  
+
 
   return (
     <Router>
@@ -41,7 +46,36 @@ function App() {
             <Nav onFiltersUpdate={handleFiltersUpdate} />
             <NavBar />
             {/* Передаем текущие фильтры в Main */}
-            <Main filters={filters} refHome={homesRef}/>
+            <Main filters={filters} refHome={homesRef} />
+          </>
+        } />
+
+        {/* auth */}
+        <Route path='auth/' element={
+          <>
+            <AuthProfile />
+          </>
+        } />
+        <Route path='auth/history/' element={
+          <>
+            <AuthProfile component={<History/>} />
+          </>
+        }/>
+        <Route path='auth/set_password/' element={
+          <>
+            <AuthProfile component={<SetPassword/>} />
+          </>
+        }/>
+
+        {/* login */}
+        <Route path='auth/login/' element={
+          <>
+            <Login />
+          </>
+        } />
+        <Route path='auth/register/' element={
+          <>
+            <Register />
           </>
         } />
         <Route path='/home/:id' element={<DetailHome />} />

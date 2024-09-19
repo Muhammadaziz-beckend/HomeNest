@@ -3,14 +3,27 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from account.models import User
+from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
-from .serializers import LoginSerializer, ProfileUserSerializer, RegisterSerializer
+from .serializers import (
+    LoginSerializer,
+    ProfileUserSerializer,
+    RegisterSerializer,
+    UpdateSerializer,
+)
 
+@api_view(["POST"])
+def logout(req):
+    print(req)
 
 @api_view(["POST"])
 def login_api(req):
 
     serializer = LoginSerializer(data=req.data)
+    print(req.data)
     serializer.is_valid(raise_exception=True)
 
     phone = serializer.validated_data.get("phone")
@@ -30,10 +43,12 @@ def login_api(req):
             "token": token,
         }
 
+        print(date)
+
         return Response(date)
 
     return Response(
-        {"detail": "The user does not exist or the password is incorrect"},
+        {"detail": "Пользователь не существует или пароль неверен"},
         status.HTTP_401_UNAUTHORIZED,
     )
 
@@ -41,6 +56,15 @@ def login_api(req):
 @api_view(["POST"])
 def register_api(req):
     serializer = RegisterSerializer(data=req.data)
+    print(req.data)
+
+    phone_user_req = req.data.get("phone")
+
+    if User.objects.filter(phone=phone_user_req):
+        return Response(
+            {"detail": "Такой телефон номер существует"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     serializer.is_valid(raise_exception=True)
 
@@ -55,4 +79,27 @@ def register_api(req):
         "token": token,
     }
 
-    return Response(date,status=status.HTTP_201_CREATED)
+    return Response(date, status=status.HTTP_201_CREATED)
+
+
+class UpdateUser(APIView):
+
+    def patch(self, request):
+        user = get_object_or_404(User, pk=request.GET.get("pk"))
+
+        serializer = UpdateSerializer(user, data=request.data, partial=True)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        reade_serializer = ProfileUserSerializer(
+            instance=user, context={"request": request}
+        )
+        token = Token.objects.get_or_create(user=user)[0].key
+
+        print(request)
+        return Response(
+            {
+                **reade_serializer.data,
+                "token": token,
+            }
+        )

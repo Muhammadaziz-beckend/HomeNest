@@ -82,13 +82,39 @@ a {
                 align-items: center;
                 gap: .9rem;
 
-                a {
+                a:nth-child(1) {
                     color: #FFFFFF;
                     font-size: 20px;
                     font-weight: 700;
                     line-height: 23px;
                     letter-spacing: 0%;
                 }
+
+                a:nth-child(2) {
+                    color: #FFF;
+                    padding: 17px 0px;
+                    width: 5rem;
+                    text-align: center;
+
+                    font-family: var(--Roboto);
+                    font-size: 16px;
+                    font-weight: 500;
+                    line-height: 16px;
+
+                    transition: all .2s ease;
+
+                    border-radius: 5px;
+                    box-shadow: 0px 10px 20px 0px rgba(7, 110, 205, 0.2);
+                    background: linear-gradient(90.00deg, rgb(3, 155, 229), rgb(7, 110, 205) 100%);
+
+
+                }
+
+                .hover {
+                    transition: all .1s ease-in;
+                    transform: scale(1.1);
+                }
+
             }
         }
     }
@@ -123,9 +149,9 @@ a {
 }
 
 
-@media screen and  {
+/* @media screen and  {
     
-}
+} */
 
 
 .nav {

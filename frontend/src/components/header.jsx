@@ -1,12 +1,17 @@
 import logo from './../static/img/houseNest.png';
 import fon from './../static/img/header-fon.png';
 import fonBlack from './../static/img/Затемнение.png';
-import telegram from './../static/img/telegram.svg';
-import whatsapp from './../static/img/whatsapp.svg';
 import './../static/css/style.css'
 import { NavLink } from 'react-router-dom';
+import { useState } from 'react';
 
 const Header = (props) => {
+
+    let [buttonClass, setButtonClass] = useState('hover')
+
+    setInterval(
+        () => buttonClass ? setButtonClass('') : setButtonClass('hover')
+        , 1000)
 
     return (
         <header className="header">
@@ -16,7 +21,7 @@ const Header = (props) => {
 
                     <div className="start">
                         <NavLink to='/' className="logo">
-                            {props.detail == true ? (<><h2 style={{color:'#393939'}}>House<span>Nest</span></h2></>) : (<> <img src={logo} alt="" /> <h2 style={{color:'#FFF'}}>House<span>Nest</span></h2></>)}
+                            {props.detail == true ? (<><h2 style={{ color: '#393939' }}>House<span>Nest</span></h2></>) : (<> <img src={logo} alt="" /> <h2 style={{ color: '#FFF' }}>House<span>Nest</span></h2></>)}
                         </NavLink>
 
                         <p className='comment'>
@@ -26,14 +31,11 @@ const Header = (props) => {
                     </div>
 
                     <div className="menu">
-                        {props.detail == true ? (<a style={{color:'black'}} href="tel:+996557230021">+(996) 557 230 021</a>) : (<a href="tel:+996557230021">+(996) 557 230 021</a>)}
-                        
-                        <a href="">
-                            <img src={telegram} alt="" />
-                        </a>
-                        <a href="">
-                            <img src={whatsapp} alt="" />
-                        </a>
+                        {props.detail == true ? (<a style={{ color: 'black' }} href="tel:+996557230021">+(996) 557 230 021</a>) : (<a href="tel:+996557230021">+(996) 557 230 021</a>)}
+
+                        <NavLink to="auth/login/" className={'login ' + buttonClass}>
+                            Войти
+                        </NavLink>
                     </div>
 
                 </div>
