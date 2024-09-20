@@ -4,7 +4,7 @@ import Phone from '../components/phone'
 import axios from 'axios'
 import loading_gif from './../../static/img/loading.gif'
 import { useNavigate } from 'react-router-dom'
-
+ 
 const Right = () => {
 
     let navigate = useNavigate()
@@ -20,7 +20,7 @@ const Right = () => {
 
         const infoUser = JSON.parse(localStorage.getItem('infoUser'))
 
-        console.log(infoUser);
+        
         firstName.current.value = infoUser?.first_name
         lastName.current.value = infoUser?.last_name
         email.current.value = infoUser?.email
@@ -31,6 +31,7 @@ const Right = () => {
         }
 
     }, [])
+
 
 
     const formSubmit = (event) => {

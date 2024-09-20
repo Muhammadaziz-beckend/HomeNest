@@ -280,16 +280,30 @@ class House(DateModelAbstract):
     #     house.yard_equipment.set(validated_data['yard_equipment'])
 
     #     return house
-
+from datetime import datetime
 
 class BookRegister(models.Model):
     data_start = models.DateField("Дата заезда")
     data_end = models.DateField("Дата выезда")
-    home = models.ForeignKey(
+    home:House = models.ForeignKey(
         House,
         models.CASCADE,
         "book_register",
     )
+    user = models.ForeignKey(
+        User,
+        models.CASCADE,
+        "book_register",
+    )
+
+    def prise(self):
+        return str(self.home.price)
+
+    def result_prise(self):
+        res = (self.data_end - self.data_start).days
+        if self.data_end == self.data_start:
+            return str(self.home.price)
+        return str(res * self.home.price)
 
     def __str__(self):
         return f"с {self.data_start} до {self.data_end}"

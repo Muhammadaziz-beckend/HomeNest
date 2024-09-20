@@ -1,8 +1,10 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import css from './../../static/css/auth/style.module.css'
 import { useState, useRef, useEffect } from 'react'
 
 const Left = () => {
+    const navigate = useNavigate()
+
     const dataPersonal = useRef()
     const historyHouse = useRef()
     const changePassword = useRef()
@@ -19,6 +21,7 @@ const Left = () => {
         BecomeLandlord.current.className = css.text_li
 
         active.current.className = `${css.text_li} ${css.active}`
+        navigate(active.current.pathname)
     }, [active])
 
     return (

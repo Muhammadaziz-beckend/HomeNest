@@ -238,6 +238,9 @@ class HouseDetailSerializer(serializers.ModelSerializer):
 
 # списак дат по поренде
 class BookRegisterSerializer(serializers.ModelSerializer):
+
+    home = HouseDetailSerializer(read_only=True)
+
     class Meta:
         model = BookRegister
         fields = "__all__"

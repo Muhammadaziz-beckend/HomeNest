@@ -33,7 +33,7 @@ const Header = (props) => {
                     <div className="menu">
                         {props.detail == true ? (<a style={{ color: 'black' }} href="tel:+996557230021">+(996) 557 230 021</a>) : (<a href="tel:+996557230021">+(996) 557 230 021</a>)}
 
-                        <NavLink to="auth/login/" className={'login ' + buttonClass}>
+                        <NavLink to="/auth/login/" className={'login ' + buttonClass}>
                             Войти
                         </NavLink>
                     </div>

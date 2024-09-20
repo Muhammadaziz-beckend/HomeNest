@@ -56,5 +56,6 @@ class User(AbstractUser):
 
     get_full_name.fget.short_description = _("полное имя")
 
+
     def __str__(self):
         return f"{self.get_full_name or str(self.phone)}"

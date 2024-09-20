@@ -1,6 +1,6 @@
 import pprint
 from django_filters import rest_framework as django_filters 
-from main.models import House
+from main.models import House,BookRegister
 
 
 class FilterHome(django_filters.FilterSet):
@@ -55,3 +55,9 @@ class FilterHome(django_filters.FilterSet):
         # лифт+
         # В помещении +
         # на территории +
+
+
+# class FilterBookRegister(django_filters.FilterSet):
+    
+#     class Meta:
+#         model = BookRegister
