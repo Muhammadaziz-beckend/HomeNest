@@ -148,11 +148,11 @@ class BookRegisterAdmin(admin.ModelAdmin):
     list_display_links = ('id','data_start','data_end','result_prise','prise','home')
 
     def result_prise(self, obj):
-        return obj.result_prise()
+        return obj.result_prise
 
     result_prise.short_description = 'Итоговая цена' 
 
     def prise(self, obj):
-        return obj.prise()
+        return obj.prise
 
     prise.short_description = 'цена' 

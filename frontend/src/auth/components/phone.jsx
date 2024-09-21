@@ -4,7 +4,6 @@ import 'react-phone-input-2/lib/style.css';
 
 const PhoneNumberInput = ({ setPhoneRef, click }) => {
     const [phone, setPhone] = useState('');
-    console.log(setPhoneRef);
 
 
     if (setPhoneRef) {setPhoneRef('+' + phone)}

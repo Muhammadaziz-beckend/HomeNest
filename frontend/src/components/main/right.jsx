@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import not_faun from './../../static/img/404.png'
 import Pagination from './pagination'
 
-const Right = ({ props, refHome }) => {
+const Right = ({ props, refHome, citeInfo, regionInfo }) => {
 
     const [data, setData] = useState([])
     const [cite, setCite] = useState([])
     const [region, setRegion] = useState([])
     const [inRoom, setInRoom] = useState([])
-    const [accommodationOptions,setAccommodationOptions] = useState([])
+    const [accommodationOptions, setAccommodationOptions] = useState([])
 
     // paginator
     const [page, setPage] = useState(1)
@@ -19,8 +19,8 @@ const Right = ({ props, refHome }) => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const getHouseAll = async (url, setData, data = true) => {
-                    
+                const getHouseAll = async (url, setData, data = true, setDataIgnore = null) => {
+
                     const resJson = await (await fetch(url)).json();
 
                     if (data) {
@@ -29,8 +29,19 @@ const Right = ({ props, refHome }) => {
                         setCountPage(Number(resJson?.page_count))
 
                         setData(resJson?.data)
+
+                        if (setDataIgnore != null) {
+                            setDataIgnore(resJson?.data)
+                        }
                     }
-                    else setData(resJson);
+                    else {
+                        setData(resJson);
+
+
+                        if (setDataIgnore != null) {
+                            setDataIgnore(resJson)
+                        }
+                    }
                 };
 
                 const buildUrlWithParams = (baseUrl, filters) => {
@@ -55,8 +66,8 @@ const Right = ({ props, refHome }) => {
 
 
                 await getHouseAll(buildUrlWithParams(`http://127.0.0.1:8000/api/v1/houses/?page=${page}`, props), setData);
-                await getHouseAll('http://127.0.0.1:8000/api/v1/cite/', setCite, false);
-                await getHouseAll('http://127.0.0.1:8000/api/v1/region/', setRegion, false);
+                await getHouseAll('http://127.0.0.1:8000/api/v1/cite/', setCite, false,citeInfo);
+                await getHouseAll('http://127.0.0.1:8000/api/v1/region/', setRegion, false,regionInfo);
                 await getHouseAll('http://127.0.0.1:8000/api/v1/in-room/', setInRoom, false);
                 await getHouseAll('http://127.0.0.1:8000/api/v1/accommodation-options/', setAccommodationOptions, false);
             } catch (error) {

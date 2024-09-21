@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404, GenericAPIView
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from .filter import FilterHome
 from rest_framework.permissions import IsAuthenticated
@@ -38,6 +39,7 @@ from .serializers import (
     NearSerializer,
     House_rulesSerializer,
     BookRegisterSerializer,
+    CreateBookRegisterSerializer,
 )
 from account.models import User
 from rest_framework.status import *
@@ -287,9 +289,12 @@ def house_rules_list(req):
     return Response(serializer.data)
 
 
-class BookRegisterUser(GenericAPIView):
+class BookRegisterUser(CreateModelMixin, GenericAPIView):
     queryset = BookRegister.objects
-    serializer_class = BookRegisterSerializer
+    serializer_classes = {
+        "get": BookRegisterSerializer,
+        "post": CreateBookRegisterSerializer,
+    }
     lookup_field = "id"
     permission_classes = [IsAuthenticated]
     pagination_class = PaginatorClass
@@ -302,16 +307,10 @@ class BookRegisterUser(GenericAPIView):
         try:
 
             user_token = Token.objects.get(user=user)
-            print(token, "request token")
-            print(user_token, "user_token")
 
             if token != user_token:
                 return Response(
-                    {
-                        "detail": (
-                            "Личность не подвержена"
-                        )
-                    },
+                    {"detail": ("Личность не подвержена")},
                     status=HTTP_401_UNAUTHORIZED,
                 )
 
@@ -335,42 +334,118 @@ class BookRegisterUser(GenericAPIView):
 
         return self.get_paginated_response(serialize.data)
 
+    def post(self, request, id, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
-@api_view(["GET", "POST"])
-@permission_classes([Reade_or_Post])
-def book_register_list(req):
-    house_rules = BookRegister.objects.all()
-
-    if req.method == "POST":
-        serializer = BookRegisterSerializer(data=req.data, context={"request": req})
         serializer.is_valid(raise_exception=True)
 
-        date_start = req.data.get("data_start")
-        date_end = req.data.get("data_end")
-        home = req.data.get("home")
 
-        resat = house_rules.filter(
+        token = request.auth
+        user = get_object_or_404(User, id=id)
+
+        try:
+
+            user_token = Token.objects.get(user=user)
+
+            if token != user_token:
+                return Response(
+                    {"detail": ("Личность не подвержена")},
+                    status=HTTP_401_UNAUTHORIZED,
+                )
+
+        except Exception as error:
+            return Response(
+                {
+                    "detail": (
+                        "Такова токена не существует"
+                        if str(error) == "Token matching query does not exist."
+                        else str(error)
+                    )
+                },
+                status=HTTP_401_UNAUTHORIZED,
+            )
+
+        date_start = request.data.get("data_start")
+        date_end = request.data.get("data_end")
+        home = request.data.get("home")
+
+        resat = self.get_queryset().filter(
             Q(data_start__gte=date_start), Q(data_end__lt=date_end) | Q(home__pk=home)
         )
 
         if (resat) or (date_start > date_end):
-            serializer = BookRegisterSerializer(
-                resat, many=True, context={"request": req}
-            )
+            serializer = self.get_serializer(resat, many=True)
             return Response(
                 (
-                    {"error": "data_start"}
+                    {"detail": "data_start"}
                     if (date_start > date_end)
-                    else {"error": "data_include", "allDate": serializer.data}
+                    else {"detail": "data_include", "allDate": serializer.data}
                 ),
                 status=HTTP_400_BAD_REQUEST,
             )
 
-        house_rules = serializer.save()
-        read_book_register = BookRegisterSerializer(
-            house_rules, context={"request": req}
-        )
+        house_rules = serializer.save(user=id)
+        read_book_register = self.get_serializer(house_rules)
         return Response(read_book_register.data, status=HTTP_201_CREATED)
+    
+
+    def get_serializer_class(self):
+        assert self.serializer_classes is not None, (
+            "'%s' should either include a `serializer_classes` attribute, "
+            "or override the `get_serializer_class()` method." % self.__class__.__name__
+        )
+
+        method = self.request.method.lower()
+        return self.serializer_classes[method]
+
+    def get_read_serializer(self, *args, **kwargs):
+        assert self.serializer_classes.get("get") is not None, (
+            "'%s' should either include a serializer class for get method,"
+            "if want to use read serializer, please set serializer class for get method"
+            "or override the `get_serializer_class()` method." % self.__class__.__name__
+        )
+        serializer = self.serializer_classes.get("get")
+
+        kwargs.setdefault("context", self.get_serializer_context())
+        return serializer(*args, **kwargs)
+
+
+# @api_view(["GET", "POST"])
+@api_view(["GET"])
+@permission_classes([Reade_or_Post])
+def book_register_list(req):
+    house_rules = BookRegister.objects.all()
+
+    # if req.method == "POST":
+    #     serializer = BookRegisterSerializer(data=req.data, context={"request": req})
+    #     serializer.is_valid(raise_exception=True)
+
+    #     date_start = req.data.get("data_start")
+    #     date_end = req.data.get("data_end")
+    #     home = req.data.get("home")
+
+    #     resat = house_rules.filter(
+    #         Q(data_start__gte=date_start), Q(data_end__lt=date_end) | Q(home__pk=home)
+    #     )
+
+    #     if (resat) or (date_start > date_end):
+    #         serializer = BookRegisterSerializer(
+    #             resat, many=True, context={"request": req}
+    #         )
+    #         return Response(
+    #             (
+    #                 {"error": "data_start"}
+    #                 if (date_start > date_end)
+    #                 else {"error": "data_include", "allDate": serializer.data}
+    #             ),
+    #             status=HTTP_400_BAD_REQUEST,
+    #         )
+
+    #     house_rules = serializer.save()
+    #     read_book_register = BookRegisterSerializer(
+    #         house_rules, context={"request": req}
+    #     )
+    #     return Response(read_book_register.data, status=HTTP_201_CREATED)
 
     serializer = BookRegisterSerializer(
         house_rules, many=True, context={"request": req}

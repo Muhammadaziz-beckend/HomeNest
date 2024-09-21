@@ -296,9 +296,13 @@ class BookRegister(models.Model):
         "book_register",
     )
 
+    date_add = models.DateField("Дата добавления", auto_now_add=True,null=True)
+
+    @property
     def prise(self):
         return str(self.home.price)
 
+    @property
     def result_prise(self):
         res = (self.data_end - self.data_start).days
         if self.data_end == self.data_start:

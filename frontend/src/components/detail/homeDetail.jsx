@@ -5,6 +5,7 @@ import Header from '../header';
 import DatePickerInput from './inputData.jsx';
 import './../../static/css/detail.css';
 import MySwiper from './swiperMy.jsx';
+import Authorization from '../../request/authorization.jsx'
 
 import door from '../../static/img/door.svg'
 import bad from '../../static/img/bed.svg'
@@ -20,7 +21,7 @@ const HomeDetail = () => {
   const [startDate2, setStartDate2] = useState(new Date().setDate(new Date().getDate() + 1)); // Установите текущую дату
   const [formData2, setFormData2] = useState({ date: new Date() });
 
-  const [inRoom,setInRoom] = useState([])
+  const [inRoom, setInRoom] = useState([])
 
   const { id } = useParams();
 
@@ -81,22 +82,28 @@ const HomeDetail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData, formData2);
+    // console.log(formData, formData2);
 
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/v1/submit-date/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-        body: JSON.stringify(formData2),
-      });
-      const result = await response.json();
-      console.log('Дата успешно отправлена:', result);
-    } catch (error) {
-      console.error('Ошибка при отправке данных:', error);
+    const [year, month, day] = [formData?.date.getFullYear(), formData?.date.getMonth() + 1, formData?.date.getDate()]
+    const [year2, month2, day2] = [formData2?.date.getFullYear(), formData2?.date.getMonth() + 1, formData2?.date.getDate()]
+
+    console.log(year, month, day);
+    console.log(year2, month2, day2);
+
+
+
+    const { token } = JSON.parse(localStorage.getItem('infoUser'))
+    const userId = JSON.parse(localStorage.getItem('infoUser'))?.id
+    const body = {
+      data_start: `${year}-${month}-${day}`,
+      data_end: `${year2}-${month2}-${day2}`,
+      user:userId,
+      home: id,
     }
+    const res = await Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${userId}/`, token, false, body)
+
+    console.log(res);
+
   };
 
   const containerStyle = {
@@ -263,41 +270,41 @@ const HomeDetail = () => {
                   <div className="blok">
                     <h3>Доступность</h3>
 
-                      <ul className='custom-list'>
-                        {home?.is_elevator ? (<li>лифт</li> ): <></>}
-                        <li> находится на {home?.floors} этаже</li>
-                      </ul>
+                    <ul className='custom-list'>
+                      {home?.is_elevator ? (<li>лифт</li>) : <></>}
+                      <li> находится на {home?.floors} этаже</li>
+                    </ul>
                   </div>
 
                   <div className="blok">
                     <h3>Входит в стоимость проживания</h3>
 
-                      <ul className='custom-list'>
-                        {home?.included_in_the_price.map(item => (<li>{item?.name}</li>))}
-                      </ul>
+                    <ul className='custom-list'>
+                      {home?.included_in_the_price.map(item => (<li>{item?.name}</li>))}
+                    </ul>
                   </div>
 
                   <div className="blok">
                     <h3>Оснащение</h3>
 
-                      <ul className='custom-list'>
-                        {
-                          home?.in_room.map(item => {
-                            for (let i =0;i < inRoom.length;i++) {
+                    <ul className='custom-list'>
+                      {
+                        home?.in_room.map(item => {
+                          for (let i = 0; i < inRoom.length; i++) {
 
-                              return inRoom[i]?.id == item ? (<li>{inRoom[i]?.name}</li>): ''
-                            }
-                          })
-                        }
-                      </ul>
+                            return inRoom[i]?.id == item ? (<li>{inRoom[i]?.name}</li>) : ''
+                          }
+                        })
+                      }
+                    </ul>
                   </div>
-                    
+
 
                 </div>
-                  
-                <div className="blok-info-plas" style={{marginTop:'20px'}}>
-                <h3>Дополнительная информация</h3>
-                <p style={containerStyle}>{home?.descriptions5}</p>
+
+                <div className="blok-info-plas" style={{ marginTop: '20px' }}>
+                  <h3>Дополнительная информация</h3>
+                  <p style={containerStyle}>{home?.descriptions5}</p>
                 </div>
 
               </div>

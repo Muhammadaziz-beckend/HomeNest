@@ -1,23 +1,28 @@
 import axios from "axios"
 
 
-const Authorization = async (url,token,data=false) => {
+const Authorization = async (url, token, data = false, body = null) => {
 
     const headers = {
-        'Authorization': `Token ${token}`
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
     }
 
-    let res
+    let res = null
 
     try {
-        res = await axios(url,{headers})
-        
+        res = await axios({
+            method: body ? 'POST' : 'GET', // Метод запроса: POST если есть body, иначе GET
+            url: url,
+            headers: headers,
+            data: body // Тело запроса (будет отправлено только для POST/PUT запросов)
+        })
+
         if (data) return res?.data
 
-    }catch (error) {
+    } catch (error) {
         console.log(error);
-        
-    }  
+    }
 
     return res
 }

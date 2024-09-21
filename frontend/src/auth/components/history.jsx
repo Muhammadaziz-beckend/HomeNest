@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react'
 import Authorization from './../../request/authorization.jsx'
 import css from './../../static/css/auth/style.module.css'
+import HistoryBlok from './history_blok.jsx'
 
-const History = () => {
+const History = ({ regionInfo, citeInfo }) => {
 
-    const [history, setHistory] = useState()
+    const [history, setHistory] = useState(null)
 
     const { token, id } = JSON.parse(localStorage.getItem('infoUser'))
 
     useEffect(() => {
         Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${id}`, token, true).then((r) => setHistory(r))
     }, [])
-
-    console.log(history);
 
 
     return (
@@ -22,13 +21,16 @@ const History = () => {
 
                 <div className={css.blok_history}>
                     <div className={css.info_history}>
-                        <ul>
+                        <ul className={css.info_history_ul}>
                             <li>начала</li>
                             <li>конец</li>
                             <li>цена</li>
                             <li>сумма</li>
+                            <li>дата заказа</li>
                         </ul>
                     </div>
+
+                    <HistoryBlok data={history} regionInfo={regionInfo} citeInfo={citeInfo} />
                 </div>
             </div>
         </>

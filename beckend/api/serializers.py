@@ -239,8 +239,33 @@ class HouseDetailSerializer(serializers.ModelSerializer):
 # списак дат по поренде
 class BookRegisterSerializer(serializers.ModelSerializer):
 
-    home = HouseDetailSerializer(read_only=True)
+    home = HousesSerializer()
+    result_prise = serializers.SerializerMethodField()  # Новое поле
+    prise = serializers.SerializerMethodField()  # Новое поле
+
 
     class Meta:
         model = BookRegister
         fields = "__all__"
+
+    def get_result_prise(self, obj):
+        return obj.result_prise # Возвращаем результат метода
+
+    def get_prise(self,obj):
+        return obj.prise
+
+
+from account.models import User
+
+class CreateBookRegisterSerializer(serializers.ModelSerializer):
+
+    home = serializers.PrimaryKeyRelatedField(queryset=House.objects.all())
+
+    class Meta:
+        model = BookRegister
+        fields = ['data_start','data_end','home']
+
+    def save(self, **kwargs):
+        # Получаем пользователя из контекста запроса и передаем в save()
+        kwargs['user'] = self.context['request'].user
+        return super().save(**kwargs)

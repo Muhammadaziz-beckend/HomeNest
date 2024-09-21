@@ -19,6 +19,9 @@ function App() {
     roomType: ''
   });
 
+  const [region,setRegion] = useState()
+  const [cite,setCite] = useState()
+
   // Реф для элемента homes
   const homesRef = useRef(null);
 
@@ -46,19 +49,19 @@ function App() {
             <Nav onFiltersUpdate={handleFiltersUpdate} />
             <NavBar />
             {/* Передаем текущие фильтры в Main */}
-            <Main filters={filters} refHome={homesRef} />
+            <Main filters={filters} refHome={homesRef} regionInfo={setRegion} citeInfo={setCite} />
           </>
         } />
 
         {/* auth */}
         <Route path='auth/' element={
           <>
-            <AuthProfile />
+            <AuthProfile  />
           </>
         } />
         <Route path='auth/history/' element={
           <>
-            <AuthProfile component={<History/>} />
+            <AuthProfile component={<History regionInfo={region} citeInfo={cite}/>} />
           </>
         }/>
         <Route path='auth/set_password/' element={

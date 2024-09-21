@@ -3,7 +3,7 @@ import Right from "./components/main/right.jsx"
 import { useState, useEffect } from "react"
 
 
-const Main = ({ filters, refHome }) => {
+const Main = ({ filters, refHome, regionInfo, citeInfo }) => {
 
     const [leftFilter, setLeftFilter] = useState(null)
     const [merging, setMerging] = useState(filters)
@@ -12,7 +12,7 @@ const Main = ({ filters, refHome }) => {
         setMerging(
             {
                 ...leftFilter,
-                ...filters
+                ...filters,
             }
         )
     }
@@ -36,7 +36,12 @@ const Main = ({ filters, refHome }) => {
                 <div className="main-items">
 
                     <Left setLeftFilter={setLeftFilter} />
-                    <Right props={merging} refHome={refHome} />
+                    <Right
+                        props={merging}
+                        refHome={refHome}
+                        regionInfo={regionInfo}
+                        citeInfo={citeInfo} 
+                    />
 
                 </div>
             </div>
