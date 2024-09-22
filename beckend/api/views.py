@@ -1,4 +1,3 @@
-import json
 from django.core.serializers import serialize
 from django.shortcuts import render
 from django.db import models
@@ -6,14 +5,15 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404, GenericAPIView
-from rest_framework.mixins import CreateModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
 from .filter import FilterHome
 from rest_framework.permissions import IsAuthenticated
 from api.auth.permissions import Reade_or_Post
-from rest_framework.mixins import ListModelMixin
 from rest_framework.authtoken.models import Token
 from django.utils.translation import gettext_lazy as _
+from datetime import datetime
+import json
 
 from main.models import (
     House,
@@ -86,58 +86,6 @@ class ListCreateHouses(GenericAPIView):
         )
 
 
-# @api_view(["GET", "POST"])
-# @permission_classes([Reade_or_Post])
-# def houses_list(req):
-# if req.method == "POST":
-#     # clone_house(1,220) #для клонирования
-#     serializer = HousesSerializer(data=req.data, context={"request": req})
-
-#     if serializer.is_valid():
-#         house = serializer.save()
-#         resat_post = HousesSerializer(house, context={"request": req})
-#         return Response(resat_post.data, status=HTTP_201_CREATED)
-#     return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-# houses = House.objects.all()
-
-# scorch = req.GET.get("scorch")
-
-# if scorch:
-#     houses.filter(
-#         Q(address__icontains=scorch)
-#         | Q(price=scorch)
-#         | Q(descriptions1__icontains=scorch)
-#     )
-
-# filter = FilterHome(data=req.GET, request=houses)
-
-# houses = filter.qs
-
-# ordering = []  # надо сделать сортировку
-
-# page = req.GET.get("page", 1)
-# page_size = req.GET.get("limit", 7)
-
-# paginator = Paginator(houses, page_size)
-# count = houses.count()
-
-# houses = paginator.get_page(page)
-
-# serializer = HousesSerializer(houses, many=True, context={"request": req})
-
-# # return Response(serializer.data) # без пагинации
-# return Response(
-#     {
-#         "page": int(page),
-#         "page_size": page_size,
-#         "page_count": paginator.num_pages,
-#         "count": count,
-#         "data": serializer.data,
-#     }
-# )
-
-
 @api_view(["GET", "PATCH"])
 @permission_classes([Reade_or_Post])
 def detail_house(req, id):
@@ -190,41 +138,12 @@ class ListRegion(GenericAPIView):
         return Response(serializer.data)
 
 
-# @api_view(["GET"])
-# def region_list(req):
-#     region = Region.objects.all()
-
-#     serializer = RegionSerializer(region, context={"request": req}, many=True)
-
-#     return Response(serializer.data)
-
-
-# @api_view(["GET"])
-# def room_type_list(req):
-#     room_type = Room_Type.objects.all()
-
-#     serializer = Room_TypeSerializer(room_type, context={"request": req}, many=True)
-
-#     return Response(serializer.data)
-
-
 class ListRoom_type(ListModelMixin, GenericAPIView):
     queryset = Room_Type.objects.all()
     serializer_class = Room_TypeSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-# @api_view()
-# def accommodation_options_list(req):
-#     accommodation_options: models = Accommodation_options.objects.all()
-
-#     serializer = Accommodation_optionsSerializer(
-#         accommodation_options, many=True, context={"request": req}
-#     )
-
-#     return Response(serializer.data)
 
 
 class ListAccommodation_options(ListModelMixin, GenericAPIView):
@@ -235,32 +154,12 @@ class ListAccommodation_options(ListModelMixin, GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
-# @api_view()
-# def in_room_list(req):
-#     in_room = In_room.objects.all()
-
-#     serializer = In_roomSerializer(in_room, many=True, context={"request": req})
-
-#     return Response(serializer.data)
-
-
 class ListIn_room(ListModelMixin, GenericAPIView):
     queryset = In_room.objects.all()
     serializer_class = In_roomSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-# @api_view()
-# def in_the_territory_list(req):
-#     in_the_territory = In_the_territory.objects.all()
-
-#     serializer = In_the_territorySerializer(
-#         in_the_territory, many=True, context={"request": req}
-#     )
-
-#     return Response(serializer.data)
 
 
 class ListIn_the_territory(ListModelMixin, GenericAPIView):
@@ -335,64 +234,62 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
         return self.get_paginated_response(serialize.data)
 
     def post(self, request, id, *args, **kwargs):
+        # Получаем сериализатор с данными из запроса
         serializer = self.get_serializer(data=request.data)
-
         serializer.is_valid(raise_exception=True)
 
-
+        # Получаем токен аутентификации
         token = request.auth
+        # Получаем пользователя по ID
         user = get_object_or_404(User, id=id)
 
         try:
-
+            # Проверяем, существует ли токен для данного пользователя
             user_token = Token.objects.get(user=user)
 
+            # Сравниваем токены
             if token != user_token:
                 return Response(
-                    {"detail": ("Личность не подвержена")},
+                    {"detail": "Личность не подвержена"},
                     status=HTTP_401_UNAUTHORIZED,
                 )
 
-        except Exception as error:
+        except Token.DoesNotExist:
             return Response(
-                {
-                    "detail": (
-                        "Такова токена не существует"
-                        if str(error) == "Token matching query does not exist."
-                        else str(error)
-                    )
-                },
+                {"detail": "Такого токена не существует"},
                 status=HTTP_401_UNAUTHORIZED,
             )
 
+        # Извлекаем даты начала и окончания, а также ID дома из запроса
         date_start = request.data.get("data_start")
         date_end = request.data.get("data_end")
         home = request.data.get("home")
 
+        # Проверяем, есть ли уже существующие бронирования с пересекающимися датами
         resat = self.get_queryset().filter(
-            Q(data_start__gte=date_start), Q(data_end__lt=date_end) | Q(home__pk=home)
+            Q(data_start__lte=date_end) & Q(data_end__gt=date_start) & Q(home__pk=home)
         )
 
-        if (resat) or (date_start > date_end):
-            serializer = self.get_serializer(resat, many=True)
+        # Проверяем наличие пересечений и корректность дат
+        if resat.exists() or (date_start > date_end):
             return Response(
-                (
-                    {"detail": "data_start"}
-                    if (date_start > date_end)
-                    else {"detail": "data_include", "allDate": serializer.data}
-                ),
+                {
+                    "detail": "data_start" if (date_start > date_end) else "data_include",
+                    "allDate": serializer.data if resat.exists() else []
+                },
                 status=HTTP_400_BAD_REQUEST,
             )
 
-        house_rules = serializer.save(user=id)
+        # Если все проверки пройдены, сохраняем бронирование
+        house_rules = serializer.save(user=user)
         read_book_register = self.get_serializer(house_rules)
         return Response(read_book_register.data, status=HTTP_201_CREATED)
-    
+
 
     def get_serializer_class(self):
         assert self.serializer_classes is not None, (
-            "'%s' should either include a `serializer_classes` attribute, "
-            "or override the `get_serializer_class()` method." % self.__class__.__name__
+            "'%s' should either include a serializer_classes attribute, "
+            "or override the get_serializer_class() method." % self.__class__.__name__
         )
 
         method = self.request.method.lower()
@@ -402,7 +299,7 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
         assert self.serializer_classes.get("get") is not None, (
             "'%s' should either include a serializer class for get method,"
             "if want to use read serializer, please set serializer class for get method"
-            "or override the `get_serializer_class()` method." % self.__class__.__name__
+            "or override the get_serializer_class() method." % self.__class__.__name__
         )
         serializer = self.serializer_classes.get("get")
 
@@ -410,45 +307,25 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
         return serializer(*args, **kwargs)
 
 
-# @api_view(["GET", "POST"])
-@api_view(["GET"])
-@permission_classes([Reade_or_Post])
-def book_register_list(req):
-    house_rules = BookRegister.objects.all()
+class ListBookRegister(ListModelMixin, GenericAPIView):
+    queryset = BookRegister.objects.all()
+    serializer_class = BookRegisterSerializer
 
-    # if req.method == "POST":
-    #     serializer = BookRegisterSerializer(data=req.data, context={"request": req})
-    #     serializer.is_valid(raise_exception=True)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-    #     date_start = req.data.get("data_start")
-    #     date_end = req.data.get("data_end")
-    #     home = req.data.get("home")
 
-    #     resat = house_rules.filter(
-    #         Q(data_start__gte=date_start), Q(data_end__lt=date_end) | Q(home__pk=home)
-    #     )
+class GetBookRegister(RetrieveModelMixin, GenericAPIView):
+    queryset = House.objects.all()
+    serializer_class = HouseDetailSerializer
+    lookup_field = "id"
 
-    #     if (resat) or (date_start > date_end):
-    #         serializer = BookRegisterSerializer(
-    #             resat, many=True, context={"request": req}
-    #         )
-    #         return Response(
-    #             (
-    #                 {"error": "data_start"}
-    #                 if (date_start > date_end)
-    #                 else {"error": "data_include", "allDate": serializer.data}
-    #             ),
-    #             status=HTTP_400_BAD_REQUEST,
-    #         )
+    def get(self, request, id, *args, **kwargs):
 
-    #     house_rules = serializer.save()
-    #     read_book_register = BookRegisterSerializer(
-    #         house_rules, context={"request": req}
-    #     )
-    #     return Response(read_book_register.data, status=HTTP_201_CREATED)
+        house = get_object_or_404(self.get_queryset(), id=id)
 
-    serializer = BookRegisterSerializer(
-        house_rules, many=True, context={"request": req}
-    )
+        book_registers = house.book_register
 
-    return Response(serializer.data)
+        book_reg = CreateBookRegisterSerializer(book_registers, many=True)
+
+        return Response(book_reg.data)

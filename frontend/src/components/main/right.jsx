@@ -122,7 +122,7 @@ const Right = ({ props, refHome, citeInfo, regionInfo }) => {
                         <div className="end">
                             <h3>{i?.price} c <br /> <span>Сутки</span></h3>
                             <Link to={`/home/${i?.id}`} className='first button'>Смотреть</Link>
-                            <button className='last button'>Забронировать</button>
+                            {/* <Link to={`/home/${i?.id}`} className='last button'>Забронировать</Link> */}
                         </div>
 
                     </div>

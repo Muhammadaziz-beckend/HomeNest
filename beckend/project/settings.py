@@ -40,13 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # installs
-
     'rest_framework',
     'django_cleanup',
     'rest_framework.authtoken',
     'corsheaders',
     'django_resized',
     "phonenumber_field",
+    'drf_yasg',
 
     # apps
     'main',
@@ -156,6 +156,7 @@ REST_FRAMEWORK = {
     ],
 }
 
+APPEND_SLASH=False
 
 CORS_ALLOW_ALL_ORIGINS = True
 

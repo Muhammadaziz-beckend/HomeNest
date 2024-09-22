@@ -1,6 +1,6 @@
 // HomeDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../header';
 import DatePickerInput from './inputData.jsx';
 import './../../static/css/detail.css';
@@ -10,16 +10,24 @@ import Authorization from '../../request/authorization.jsx'
 import door from '../../static/img/door.svg'
 import bad from '../../static/img/bed.svg'
 import gost from '../../static/img/gost.svg'
+import axios from 'axios';
+
+import goodForm from '../../static/img/goodForm.svg'
 
 const HomeDetail = () => {
+  const navigate = useNavigate()
+
   const [region, setRegion] = useState([]);
   const [cite, setCite] = useState([]);
   const [home, setHome] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState(new Date()); // Установите текущую дату
+  const [startDate, setStartDate] = useState(); // Установите текущую дату
   const [formData, setFormData] = useState({ date: new Date() });
-  const [startDate2, setStartDate2] = useState(new Date().setDate(new Date().getDate() + 1)); // Установите текущую дату
+  const [startDate2, setStartDate2] = useState(); // Установите текущую дату
   const [formData2, setFormData2] = useState({ date: new Date() });
+
+  const [error_message, setError_message] = useState('')
+  const [goodBran, setGoodBran] = useState(false)
 
   const [inRoom, setInRoom] = useState([])
 
@@ -44,10 +52,13 @@ const HomeDetail = () => {
     fetchData();
   }, []);
 
+  const [bookings, setBookings] = useState([]);
+
   useEffect(() => {
     const fetchHome = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/houses/${id}`);
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/houses/${id}/`);
+
         const data = await response.json();
         setHome(data);
       } catch (error) {
@@ -57,6 +68,20 @@ const HomeDetail = () => {
       }
     };
 
+
+    const getBookingsRegister = async () => {
+
+      try {
+
+        const res = await axios.get(`http://127.0.0.1:8000/api/v1/date-register/${id}`)
+        setBookings(res?.data)
+      } catch {
+
+      }
+
+    }
+
+    getBookingsRegister();
     fetchHome();
   }, [id]);
 
@@ -67,42 +92,61 @@ const HomeDetail = () => {
     return <div>Дом не найден</div>;
   }
 
-  const mainImage = home?.images?.[0]?.image;
-  const otherImages = home?.images?.slice(1);
-
   const handleDateChange = (date) => {
     setStartDate(date);
     setFormData({ date });
+    if (startDate2 <= date) {
+      const newEndDate = new Date(date);
+      newEndDate.setDate(newEndDate.getDate() + 1);
+      setStartDate2(newEndDate);
+      setFormData2({ date: newEndDate });
+    }
   };
 
   const handleDateChange2 = (date) => {
-    setStartDate2(date);
-    setFormData2({ date });
+    if (date <= startDate) {
+      const newEndDate = new Date(startDate);
+      newEndDate.setDate(newEndDate.getDate() + 1);
+      setStartDate2(newEndDate);
+      setFormData2({ date: newEndDate });
+    } else {
+      setStartDate2(date);
+      setFormData2({ date });
+    }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData, formData2);
+
+    if (!localStorage.getItem('infoUser')) {
+
+      return navigate('/auth/login/')
+    }
 
     const [year, month, day] = [formData?.date.getFullYear(), formData?.date.getMonth() + 1, formData?.date.getDate()]
     const [year2, month2, day2] = [formData2?.date.getFullYear(), formData2?.date.getMonth() + 1, formData2?.date.getDate()]
-
-    console.log(year, month, day);
-    console.log(year2, month2, day2);
-
-
 
     const { token } = JSON.parse(localStorage.getItem('infoUser'))
     const userId = JSON.parse(localStorage.getItem('infoUser'))?.id
     const body = {
       data_start: `${year}-${month}-${day}`,
       data_end: `${year2}-${month2}-${day2}`,
-      user:userId,
+      user: userId,
       home: id,
     }
     const res = await Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${userId}/`, token, false, body)
 
-    console.log(res);
+    if (res?.status && res?.status === 400) {
+      console.log(res);
+
+      setError_message('Извините это дата занята')
+    } else {
+      setGoodBran(true)
+      setTimeout(() => { navigate('/auth/history/'); setGoodBran(false) }, 2500)
+
+      return true
+    }
 
   };
 
@@ -127,6 +171,10 @@ const HomeDetail = () => {
         <div className="container">
           <div className="main-items" style={{ display: 'flex', flexDirection: 'column' }}>
 
+            {goodBran ? (<div className="form_good">
+              <img src={goodForm} alt="" />
+            </div>) : ''}
+
             <h3 className='h2Detail'>{home?.room_type}-Комнатная квартира — {cite.find(item => item?.id == home?.city)?.name}-{region.find(item => item?.id == home?.city)?.name}, {home?.address}, {home?.street_number}</h3>
 
             <div className="blok-sail">
@@ -142,6 +190,7 @@ const HomeDetail = () => {
                     <DatePickerInput
                       selectedDate={startDate}
                       onChange={handleDateChange}
+                      bookings={bookings}
                       placeholder="Заезд"
                     />
                   </label>
@@ -149,6 +198,7 @@ const HomeDetail = () => {
                     <DatePickerInput
                       selectedDate={startDate2}
                       onChange={handleDateChange2}
+                      bookings={bookings}
                       minData={1}
                       placeholder="Выезд"
                     />
@@ -158,6 +208,9 @@ const HomeDetail = () => {
                     <h4>от {home?.price} com</h4>
                   </label>
                   <button type="submit">Отправить</button>
+                  <p className="error_message">
+                    {error_message}
+                  </p>
 
                   <span className='info_prise'>Выберите даты и количество гостей
                     для расчёта стоимости проживания</span>

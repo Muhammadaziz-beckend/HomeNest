@@ -64,7 +64,7 @@ const HistoryBlok = ({ data, citeInfo, regionInfo }) => {
 
     return (
         <>
-            <div className={css.info_history}>
+            <div className={css.info_history2}>
 
                 {history?.map(item => (<Component dataStart={item?.data_start} dataEnd={item?.data_end} prise={item?.prise} totalPrise={item?.result_prise} dataAdd={item?.date_add} house={item?.home} citeInfo={citeInfo} regionInfo={regionInfo} />))}
             </div>

@@ -83,9 +83,10 @@ def register_api(req):
 
 
 class UpdateUser(APIView):
+    
 
-    def patch(self, request):
-        user = get_object_or_404(User, pk=request.GET.get("pk"))
+    def patch(self, request,pk):
+        user = get_object_or_404(User, pk=pk)
 
         serializer = UpdateSerializer(user, data=request.data, partial=True)
 

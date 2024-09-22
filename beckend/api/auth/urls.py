@@ -6,7 +6,7 @@ urlpatterns = [
     path('register/',register_api),
     path('login/',login_api),
     path('logout/',logout),
-    path('update/',UpdateUser.as_view()),
+    path('update/<int:pk>/',UpdateUser.as_view()),
     path('book-register-user/<int:id>/',BookRegisterUser.as_view())
 ]
 

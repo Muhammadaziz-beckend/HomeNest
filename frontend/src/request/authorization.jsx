@@ -21,7 +21,10 @@ const Authorization = async (url, token, data = false, body = null) => {
         if (data) return res?.data
 
     } catch (error) {
+
         console.log(error);
+        
+        return (error);
     }
 
     return res

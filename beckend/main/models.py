@@ -2,6 +2,7 @@ from django.db import models
 from django_resized import ResizedImageField
 from account.models import User
 
+
 # Дата
 class DateModelAbstract(models.Model):
     date_add = models.DateField("Дата добавления", auto_now_add=True)
@@ -13,7 +14,15 @@ class DateModelAbstract(models.Model):
 
 # Иконка
 class ImageDes(DateModelAbstract):
-    image = ResizedImageField("Иконка",size=[920, 600], upload_to="icon/", blank=True, null=True,quality=90, force_format='WEBP')
+    image = ResizedImageField(
+        "Иконка",
+        size=[920, 600],
+        upload_to="icon/",
+        blank=True,
+        null=True,
+        quality=90,
+        force_format="WEBP",
+    )
 
     class Meta:
         abstract = True
@@ -160,7 +169,10 @@ class Kitchen_equipment(ImageDes):
         verbose_name = "кухонное оборудование"
         verbose_name_plural = "кухонное оборудовании"
 
+
 from django.utils.translation import gettext_lazy as _
+
+
 # Оснащение двора
 class Yard_equipment(ImageDes):
     name = models.CharField(verbose_name=("Оснащение двора"), max_length=50)
@@ -175,7 +187,9 @@ class Yard_equipment(ImageDes):
 
 class House(DateModelAbstract):
     # дом
-    user = models.ForeignKey(User,models.CASCADE,related_name='user_room',verbose_name=_('Владелец'))
+    user = models.ForeignKey(
+        User, models.CASCADE, related_name="user_room", verbose_name=_("Владелец")
+    )
     room_type = models.ForeignKey(
         "Room_Type",
         models.SET_NULL,
@@ -240,8 +254,10 @@ class House(DateModelAbstract):
     )
     house_rules = models.ManyToManyField(House_rules, verbose_name="Правила дома")
     in_room = models.ManyToManyField(In_room, "in_room", verbose_name="В помещении")
-    near = models.ManyToManyField(Near,verbose_name='Рядом')
-    in_the_territory = models.ManyToManyField(In_the_territory,verbose_name='на территории')
+    near = models.ManyToManyField(Near, verbose_name="Рядом")
+    in_the_territory = models.ManyToManyField(
+        In_the_territory, verbose_name="на территории"
+    )
     kitchen_equipment = models.ManyToManyField(
         to=Kitchen_equipment,
         verbose_name="Кухонное оборудование (что есть?)",
@@ -254,49 +270,36 @@ class House(DateModelAbstract):
     )
     descriptions5 = models.TextField(verbose_name="Дополнительная информация")
 
+    @property
+    def book_register(self):
+        return self.book_register.all()
+
     def __str__(self) -> str:
-        return f"{self.address}-{self.street_number}"
+        return f"{self.id} {self.address}-{self.street_number}"
 
     class Meta:
         verbose_name = "Дом"
         verbose_name_plural = "Дома"
 
-    # def create(self, validated_data):
-    #     city_data = validated_data.pop('city')
-    #     region_data = validated_data.pop('region')
-    #     images_data = validated_data.pop('images', [])
 
-    #     city = City.objects.create(**city_data)
-    #     region = Region.objects.create(**region_data)
-
-    #     house = House.objects.create(city=city, region=region, **validated_data)
-
-    #     for image_data in images_data:
-    #         Room_images.objects.create(house=house, **image_data)
-
-    #     house.included_in_the_price.set(validated_data['included_in_the_price'])
-    #     house.for_indoor_relaxation.set(validated_data['for_indoor_relaxation'])
-    #     house.kitchen_equipment.set(validated_data['kitchen_equipment'])
-    #     house.yard_equipment.set(validated_data['yard_equipment'])
-
-    #     return house
 from datetime import datetime
+
 
 class BookRegister(models.Model):
     data_start = models.DateField("Дата заезда")
     data_end = models.DateField("Дата выезда")
-    home:House = models.ForeignKey(
+    home = models.ForeignKey(
         House,
         models.CASCADE,
-        "book_register",
+        related_name="book_register",
     )
     user = models.ForeignKey(
         User,
         models.CASCADE,
-        "book_register",
+        related_name="book_register",
     )
 
-    date_add = models.DateField("Дата добавления", auto_now_add=True,null=True)
+    date_add = models.DateField("Дата добавления", auto_now_add=True, null=True)
 
     @property
     def prise(self):
@@ -329,7 +332,13 @@ class Room_Type(DateModelAbstract):
 
 
 class Room_images(DateModelAbstract):
-    image = ResizedImageField("Изображения комнаты",size=[920,600], upload_to="room/",quality=90,force_format='WEBP')
+    image = ResizedImageField(
+        "Изображения комнаты",
+        size=[920, 600],
+        upload_to="room/",
+        quality=90,
+        force_format="WEBP",
+    )
     house = models.ForeignKey("House", models.CASCADE, related_name="images")
 
     def __str__(self) -> str:

@@ -1,11 +1,11 @@
 // DatePickerInput.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ru } from 'date-fns/locale';
 
-const DatePickerInput = ({ selectedDate, onChange, placeholder, minData,style }) => {
+const DatePickerInput = ({ selectedDate, onChange, placeholder, minData, style ,bookings }) => {
     const handleChange = (date) => {
         if (typeof onChange === 'function') {
             onChange(date);
@@ -14,22 +14,43 @@ const DatePickerInput = ({ selectedDate, onChange, placeholder, minData,style })
         }
     };
 
-    // Устанавливаем сегодняшнюю дату как минимально доступную
 
-    const minDate = minData ? new Date().setDate( new Date().getDate() + minData) : new Date()
+    console.log(bookings);
+    
+    // Устанавливаем минимальную дату с учетом сдвига
+    const minDate = minData ? new Date(new Date().setDate(new Date().getDate() + minData)) : new Date();
+
+
+    // Функция для генерации массива дат из диапазона
+    const getDatesInRange = (startDate, endDate) => {
+        const dates = [];
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        for (let date = start; date <= end; date.setDate(date.getDate())) {
+            dates.push(new Date(date)); // Добавляем каждую дату в массив
+        }
+        return dates;
+    };
+
+    // Генерируем все занятые даты
+    const bookedDates = bookings.flatMap(booking =>
+        getDatesInRange(booking.data_start, booking.data_end)
+    );
 
     return (
         <DatePicker
-            selected={selectedDate}
+            selected={selectedDate || null} // Используем null, если selectedDate не передан
             onChange={handleChange}
             placeholderText={placeholder}
-            dateFormat="dd-MM-yyyy"
+            dateFormat="yyyy-MM-dd"
             className="custom-datepicker"
             name='start-data'
             minDate={minDate}
             locale={ru}
+            style={style} // Применение стиля, если передан
+            excludeDates={bookedDates}  // Передаем занятые даты
         />
-
     );
 };
 
@@ -37,12 +58,13 @@ DatePickerInput.propTypes = {
     selectedDate: PropTypes.instanceOf(Date),
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
+    minData: PropTypes.number, // Количество дней для смещения минимальной даты
     style: PropTypes.object,
 };
 
 DatePickerInput.defaultProps = {
-    selectedDate: new Date(), // Установите текущую дату по умолчанию
-    placeholder: 'Select a date',
+    selectedDate: null, // По умолчанию дата не выбрана
+    placeholder: 'Выберите дату',
     style: {},
 };
 
