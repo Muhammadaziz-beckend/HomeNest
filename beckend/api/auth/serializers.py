@@ -7,6 +7,11 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField()
 
 
+class UpdatePasswordUserSerializer(serializers.Serializer):
+    old_password = serializers.CharField()
+    new_password = serializers.CharField()
+    
+
 class UpdateSerializer(serializers.ModelSerializer):
 
     class Meta:

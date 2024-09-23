@@ -32,7 +32,7 @@ const Left = () => {
                         <h3 className={css.my_account}>Мой аккаунт</h3>
                         <NavLink className={css.text_li} to='/auth/history/'  onClick={() => setActive(historyHouse)} ref={historyHouse}>История аренды</NavLink>
                         <NavLink className={css.text_li} to='/auth/'  onClick={() => setActive(dataPersonal)} ref={dataPersonal}>Персональные данные</NavLink>
-                        <NavLink className={css.text_li} to='/auth/set_password/'  onClick={() => setActive(changePassword)} ref={changePassword}>Смена пароля</NavLink>
+                        <NavLink className={css.text_li} to='/auth/change_password/'  onClick={() => setActive(changePassword)} ref={changePassword}>Смена пароля</NavLink>
                         <NavLink className={css.text_li} to='/auth/landlord/'  onClick={() => setActive(BecomeLandlord)} ref={BecomeLandlord}>Стать арендодателем</NavLink>
                         <button  className={css.text_li} style={{color:'rgb(179, 179, 179)',cursor:'pointer'}} type="button">Выйти</button>
                     </ul>

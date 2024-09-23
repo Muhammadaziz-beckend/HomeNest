@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
 import css from './../../static/css/auth/style.module.css'
-import Phone from '../components/phone'
 import axios from 'axios'
 import loading_gif from './../../static/img/loading.gif'
 import { useNavigate } from 'react-router-dom'
@@ -56,7 +55,7 @@ const Right = () => {
                 if (!idInfoUser) return false
                 try {
                     setLoading(true)
-                    let res = await axios.patch(`http://127.0.0.1:8000/api/v1/auth/update/?pk=${idInfoUser}`,
+                    let res = await axios.patch(`http://127.0.0.1:8000/api/v1/auth/update/${idInfoUser}/`,
                         new_info
                     )
 
@@ -73,8 +72,8 @@ const Right = () => {
 
         const new_info = {
             email: email.current.value,
-            first_name: lastName.current.value,
-            last_name: firstName.current.value,
+            first_name: firstName.current.value,
+            last_name: lastName.current.value,
         }
 
         changeFn(infoUser, new_info)

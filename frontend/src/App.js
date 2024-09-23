@@ -9,7 +9,7 @@ import { useState, useRef } from 'react';
 import Login from './auth/login.jsx'
 import Register from './auth/register.jsx'
 import History from './auth/components/history.jsx'
-import SetPassword from './auth/components/set_password.jsx'
+import ChangePassword from './auth/components/changePassword.jsx'
 import AuthProfile from './auth/auth.jsx'
 
 function App() {
@@ -64,9 +64,9 @@ function App() {
             <AuthProfile component={<History regionInfo={region} citeInfo={cite}/>} />
           </>
         }/>
-        <Route path='auth/set_password/' element={
+        <Route path='auth/change_password/' element={
           <>
-            <AuthProfile component={<SetPassword/>} />
+            <AuthProfile component={<ChangePassword/>} />
           </>
         }/>
 

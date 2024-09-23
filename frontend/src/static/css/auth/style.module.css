@@ -47,6 +47,17 @@
 
 .label {}
 
+.label_text {
+
+    color: rgb(76, 76, 76);
+    font-family: var(--Inter);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 160%;
+    letter-spacing: 0%;
+    text-align: left;
+}
+
 .button_submit {
     color: #FFF;
     cursor: pointer;

@@ -8,16 +8,21 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 
+from rest_framework.permissions import IsAuthenticated
+
 from .serializers import (
     LoginSerializer,
     ProfileUserSerializer,
     RegisterSerializer,
+    UpdatePasswordUserSerializer,
     UpdateSerializer,
 )
+
 
 @api_view(["POST"])
 def logout(req):
     print(req)
+
 
 @api_view(["POST"])
 def login_api(req):
@@ -83,9 +88,8 @@ def register_api(req):
 
 
 class UpdateUser(APIView):
-    
 
-    def patch(self, request,pk):
+    def patch(self, request, pk):
         user = get_object_or_404(User, pk=pk)
 
         serializer = UpdateSerializer(user, data=request.data, partial=True)
@@ -104,3 +108,28 @@ class UpdateUser(APIView):
                 "token": token,
             }
         )
+
+
+class UpdatePasswordUser(GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UpdatePasswordUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        new_password = serializer.validated_data.get("new_password")
+        old_password = serializer.validated_data.get("old_password")
+
+        user = authenticate(phone=request.user.phone, password=old_password)
+
+        if user:
+
+            user.set_password(new_password)
+            user.save()
+
+            return Response({"detail": "Пароль успешно изменён"})
+
+        return Response({"detail": "Неверный старый пароль"}, status=status.HTTP_400_BAD_REQUEST)
