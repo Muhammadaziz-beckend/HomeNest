@@ -13,25 +13,22 @@ const DatePickerInput = ({ selectedDate, onChange, placeholder, minData, style ,
             console.error('onChange is not a function');
         }
     };
-
-
-    console.log(bookings);
     
     // Устанавливаем минимальную дату с учетом сдвига
     const minDate = minData ? new Date(new Date().setDate(new Date().getDate() + minData)) : new Date();
 
 
-    // Функция для генерации массива дат из диапазона
     const getDatesInRange = (startDate, endDate) => {
         const dates = [];
         const start = new Date(startDate);
         const end = new Date(endDate);
-
-        for (let date = start; date <= end; date.setDate(date.getDate())) {
+    
+        for (let date = start; date <= end; date.setDate(date.getDate() + 1)) { // Увеличиваем дату на 1 день
             dates.push(new Date(date)); // Добавляем каждую дату в массив
         }
         return dates;
     };
+    
 
     // Генерируем все занятые даты
     const bookedDates = bookings.flatMap(booking =>
@@ -40,6 +37,7 @@ const DatePickerInput = ({ selectedDate, onChange, placeholder, minData, style ,
 
     return (
         <DatePicker
+            autoComplete='off'
             selected={selectedDate || null} // Используем null, если selectedDate не передан
             onChange={handleChange}
             placeholderText={placeholder}

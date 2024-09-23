@@ -10,7 +10,8 @@ const History = ({ regionInfo, citeInfo }) => {
     const { token, id } = JSON.parse(localStorage.getItem('infoUser'))
 
     useEffect(() => {
-        Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${id}`, token, true).then((r) => setHistory(r))
+        Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${id}/`, token, true).then((r) => setHistory(r))
+        
     }, [])
 
 

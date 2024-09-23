@@ -10,12 +10,10 @@ const Nav = ({ onFiltersUpdate }) => {
         try {
             let getResJson = await (await fetch(url)).json();
 
-            console.log(getResJson);
-            
+
             if (value) {
                 getResJson = getResJson.filter(i => i.cite  == value);
             }
-            console.log(getResJson);
 
             const element = ref.current;
             if (element) {
@@ -67,7 +65,7 @@ const Nav = ({ onFiltersUpdate }) => {
             <div className="container">
                 <div className="nav-items">
                     <h3>Жилье на южном берегу Крыма по самым лучшим ценам</h3>
-                    <form onSubmit={handleSubmit} className='form-get'>
+                    <form onSubmit={handleSubmit} className='form-get' >
                         <label htmlFor="Cite" className="select-wrapper">
                             <select id='Cite' name='city' onChange={handleCityChange} ref={citeRef}>
                                 <option value="">Город</option>

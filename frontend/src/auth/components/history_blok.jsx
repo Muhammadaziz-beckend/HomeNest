@@ -9,8 +9,6 @@ import axios from 'axios'
 const Component = ({ dataStart, dataEnd, prise, totalPrise, dataAdd, house, citeInfo, regionInfo }) => {
     const [isOpen, setOpen] = useState(false)
 
-    // console.log(house);
-    console.log(citeInfo, regionInfo)
 
     let navigate = useNavigate()
 

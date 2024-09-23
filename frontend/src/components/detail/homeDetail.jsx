@@ -75,8 +75,9 @@ const HomeDetail = () => {
 
         const res = await axios.get(`http://127.0.0.1:8000/api/v1/date-register/${id}`)
         setBookings(res?.data)
-      } catch {
-
+      } catch (error) {
+        console.log(error);
+        
       }
 
     }
@@ -130,22 +131,20 @@ const HomeDetail = () => {
     const { token } = JSON.parse(localStorage.getItem('infoUser'))
     const userId = JSON.parse(localStorage.getItem('infoUser'))?.id
     const body = {
-      data_start: `${year}-${month}-${day}`,
-      data_end: `${year2}-${month2}-${day2}`,
+      data_start: `${year}-${month}-${day.length == 1 ? '0' + day : day }`,
+      data_end: `${year2}-${month2}-${day2.length == 1 ? '0' + day2 : day2 }`,
       user: userId,
       home: id,
     }
     const res = await Authorization(`http://127.0.0.1:8000/api/v1/auth/book-register-user/${userId}/`, token, false, body)
 
     if (res?.status && res?.status === 400) {
-      console.log(res);
 
       setError_message('Извините это дата занята')
     } else {
       setGoodBran(true)
-      setTimeout(() => { navigate('/auth/history/'); setGoodBran(false) }, 2500)
+      setTimeout(() => { navigate('/auth/history/'); setGoodBran(false) }, 1000)
 
-      return true
     }
 
   };
