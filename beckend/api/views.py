@@ -270,21 +270,28 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
             Q(data_start__lte=date_end) & Q(data_end__gt=date_start) & Q(home__pk=home)
         )
 
-        # Проверяем наличие пересечений и корректность дат
-        if resat.exists() or (date_start > date_end):
-            return Response(
-                {
-                    "detail": "data_start" if (date_start > date_end) else "data_include",
-                    "allDate": serializer.data if resat.exists() else []
-                },
-                status=HTTP_400_BAD_REQUEST,
-            )
+        if resat or (date_start > date_end):
+
+            for i in range(len(date_start) - 1):
+                if date_start[i] > date_end[i]:
+                    return Response(
+                        {
+                            "detail": (
+                                "data_start"
+                                if (date_start > date_end)
+                                else "data_include"
+                            ),
+                            "allDate": serializer.data if resat else [],
+                        },
+                        status=HTTP_400_BAD_REQUEST,
+                    )
+                else:
+                    break
 
         # Если все проверки пройдены, сохраняем бронирование
         house_rules = serializer.save(user=user)
         read_book_register = self.get_serializer(house_rules)
         return Response(read_book_register.data, status=HTTP_201_CREATED)
-
 
     def get_serializer_class(self):
         assert self.serializer_classes is not None, (

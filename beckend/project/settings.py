@@ -62,8 +62,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -156,7 +156,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-APPEND_SLASH=False
+# APPEND_SLASH=False
 
 CORS_ALLOW_ALL_ORIGINS = True
 
