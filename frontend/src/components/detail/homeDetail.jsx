@@ -22,9 +22,9 @@ const HomeDetail = () => {
   const [home, setHome] = useState(null);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(); // Установите текущую дату
-  const [formData, setFormData] = useState({ date: new Date() });
+  const [formData, setFormData] = useState();
   const [startDate2, setStartDate2] = useState(); // Установите текущую дату
-  const [formData2, setFormData2] = useState({ date: new Date() });
+  const [formData2, setFormData2] = useState();
 
   const [error_message, setError_message] = useState('')
   const [goodBran, setGoodBran] = useState(false)
@@ -125,6 +125,11 @@ const HomeDetail = () => {
       return navigate('/auth/login/')
     }
 
+    if (!(formData && formData2)) {
+      setError_message('Сначала выберите дату')
+      return false
+    }
+
     const [year, month, day] = [formData?.date.getFullYear(), formData?.date.getMonth() + 1, formData?.date.getDate()]
     const [year2, month2, day2] = [formData2?.date.getFullYear(), formData2?.date.getMonth() + 1, formData2?.date.getDate()]
 
@@ -142,9 +147,10 @@ const HomeDetail = () => {
 
       setError_message('Извините это дата занята')
     } else {
+      console.log(formData,formData2);
+      
       setGoodBran(true)
-      setTimeout(() => { navigate('/auth/history/'); setGoodBran(false) }, 1000)
-
+      setTimeout(() => { navigate('/auth/history/');setGoodBran(false) }, 1000)
     }
 
   };
