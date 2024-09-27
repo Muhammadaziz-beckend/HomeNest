@@ -15,6 +15,7 @@ from main.models import (
     Yard_equipment,
     Room_images,
     Room_Type, BookRegister,
+    
 )
 
 
@@ -255,7 +256,7 @@ class BookRegisterSerializer(serializers.ModelSerializer):
         return obj.prise
 
 
-from account.models import User
+
 
 class CreateBookRegisterSerializer(serializers.ModelSerializer):
 

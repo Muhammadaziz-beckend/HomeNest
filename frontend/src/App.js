@@ -11,6 +11,7 @@ import Register from './auth/register.jsx'
 import History from './auth/components/history.jsx'
 import ChangePassword from './auth/components/changePassword.jsx'
 import AuthProfile from './auth/auth.jsx'
+import MainWorkspace from './auth/workspace/main.jsx';
 
 function App() {
   const [filters, setFilters] = useState({
@@ -69,6 +70,12 @@ function App() {
             <AuthProfile component={<ChangePassword/>} />
           </>
         }/>
+        <Route path='auth/landlord/*' element={
+          <>
+            <MainWorkspace />
+          </>
+        }/>
+
 
         {/* login */}
         <Route path='auth/login/' element={

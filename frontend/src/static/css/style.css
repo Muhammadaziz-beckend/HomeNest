@@ -116,6 +116,21 @@ a {
                 }
 
             }
+
+            .menu_admin {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+
+                a {
+                    color: rgb(71, 69, 69);
+
+                    font-family: var(--Roboto);
+                    font-size: 20px;
+                    font-weight: 500;
+                    line-height: 16px;
+                }
+            }
         }
     }
 
@@ -282,7 +297,7 @@ a {
                     top: 50%;
                     left: 50%;
 
-                    transform: translate(-50%,-50%);
+                    transform: translate(-50%, -50%);
                 }
             }
 
@@ -635,6 +650,33 @@ a {
                                     background: linear-gradient(90.00deg, rgb(3, 155, 229), rgb(7, 110, 205) 100%);
                                 }
                             }
+
+                            .blok_user_owner {
+                                display: flex;
+                                gap: 5px;
+
+                                .button {
+                                    width: 100%;
+                                    cursor: pointer;
+                                    text-decoration: none;
+                                    width: 100%;
+                                    padding: 17px 0px;
+                                    text-align: center;
+
+                                    border: none;
+                                    border-radius: 5px;
+
+                                    color: #FFF;
+
+                                    &:nth-child(1) {
+                                        background-color: rgb(238, 177, 45);
+                                    }
+
+                                    &:nth-child(2) {
+                                        background-color: rgba(255, 0, 0, 0.753);
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -656,4 +698,97 @@ a {
             }
         }
     }
+}
+
+.blok_pagination {
+
+    display: flex;
+    gap: 10px;
+
+    .pagination_button {
+        border: none;
+        background-color: #e2ddddb0;
+        border-radius: 8px;
+        padding: 15px;
+
+        cursor: pointer;
+    }
+
+    .first {
+        img {
+
+            transform: rotate(90deg);
+        }
+    }
+
+    .last {
+        img {
+
+            transform: rotate(-90deg);
+        }
+    }
+
+}
+
+.blok_delete {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.479);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 25rem 0px;
+
+    .blok_delete_info {
+        border-radius: 8px;
+
+        background-color: #FFF;
+        padding: 20px 15px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .blok_user_owner {
+            display: flex;
+            gap: 1rem;
+
+            button {
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+
+                color: #FFF;
+
+                &:nth-child(1) {
+                    background-color: rgb(238, 177, 45);
+
+                    
+                }
+
+                &:nth-child(2) {
+                    background-color: rgba(255, 0, 0, 0.753);
+
+                    img {
+                        width: 24px;
+                    }
+                }
+            }
+
+
+        }
+    }
+}
+
+.workspace_items {
+
+    margin-top: 20px;
+
+    /* display: flex; */
 }

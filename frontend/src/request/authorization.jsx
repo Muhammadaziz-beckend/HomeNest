@@ -17,7 +17,7 @@ const Authorization = async (url, token, data = false, body = null) => {
             headers: headers,
             data: body // Тело запроса (будет отправлено только для POST/PUT запросов)
         })
-
+        
         if (data) return res?.data
 
     } catch (error) {

@@ -50,7 +50,8 @@ INSTALLED_APPS = [
 
     # apps
     'main',
-    'account'
+    'account',
+    'workspace',
 ]
 
 MIDDLEWARE = [

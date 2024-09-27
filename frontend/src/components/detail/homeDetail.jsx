@@ -21,9 +21,9 @@ const HomeDetail = () => {
   const [cite, setCite] = useState([]);
   const [home, setHome] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState(); // Установите текущую дату
+  const [startDate, setStartDate] = useState(); 
   const [formData, setFormData] = useState();
-  const [startDate2, setStartDate2] = useState(); // Установите текущую дату
+  const [startDate2, setStartDate2] = useState(); 
   const [formData2, setFormData2] = useState();
 
   const [error_message, setError_message] = useState('')

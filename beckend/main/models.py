@@ -271,7 +271,7 @@ class House(DateModelAbstract):
     descriptions5 = models.TextField(verbose_name="Дополнительная информация")
 
     @property
-    def book_register(self):
+    def active_bookings(self):
         return self.book_register.all()
 
     def __str__(self) -> str:

@@ -13,12 +13,13 @@ from rest_framework.mixins import (
 )
 from rest_framework.response import Response
 from .filter import FilterHome
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import *
 from api.auth.permissions import Reade_or_Post
 from rest_framework.authtoken.models import Token
 from django.utils.translation import gettext_lazy as _
 from datetime import datetime
-import json
+from .permissions import *
+from .mixin import ModelViewSetModification, MultipleDestroyMixin
 
 from main.models import (
     House,
@@ -52,6 +53,8 @@ from .clone import clone_house
 from .pagination import PaginatorClass
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework.backends import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
+
 
 
 class ListCreateHouses(GenericAPIView):
@@ -156,16 +159,24 @@ class DetailHouseAPIView(UpdateModelMixin, GenericAPIView):
 # return Response(serializer.data)
 
 
-class ListCiteAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
+
+class CiteViewSet(MultipleDestroyMixin,ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = [Reade_or_Post]
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+
+# class ListCiteAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
+#     queryset = City.objects.all()
+#     serializer_class = CitySerializer
+#     permission_classes = [Reade_or_Post]
+
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
 
 
 class ListRegion(GenericAPIView):
@@ -374,25 +385,42 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
         return serializer(*args, **kwargs)
 
 
-class ListBookRegister(ListModelMixin, GenericAPIView):
+
+class BookRegisterSetView(ModelViewSetModification):
     queryset = BookRegister.objects.all()
     serializer_class = BookRegisterSerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-
-class GetBookRegister(RetrieveModelMixin, GenericAPIView):
-    queryset = House.objects.all()
-    serializer_class = HouseDetailSerializer
     lookup_field = "id"
+    permission_classes_by_active = {
+        'create':[IsAuthenticated,IsAdminUser],
+        'list':[AllowAny],
+        'update':[IsAuthenticated,IsAdminUser],
+        'retrieve':[AllowAny],
+        'destroy':[IsAuthenticated,IsAdminUser]
+    }
 
-    def get(self, request, id, *args, **kwargs):
+    
 
-        house = get_object_or_404(self.get_queryset(), id=id)
 
-        book_registers = house.book_register
+# class ListBookRegister(ListModelMixin, GenericAPIView):
+#     queryset = BookRegister.objects.all()
+#     serializer_class = BookRegisterSerializer
+#     lookup_field = "id"
 
-        book_reg = CreateBookRegisterSerializer(book_registers, many=True)
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
 
-        return Response(book_reg.data)
+
+# class GetBookRegister(RetrieveModelMixin, GenericAPIView):
+#     queryset = House.objects.all()
+#     serializer_class = HouseDetailSerializer
+#     lookup_field = "id"
+
+#     def get(self, request, id, *args, **kwargs):
+
+#         house = get_object_or_404(self.get_queryset(), id=id)
+
+#         book_registers = house.book_register
+
+#         book_reg = CreateBookRegisterSerializer(book_registers, many=True)
+
+#         return Response(book_reg.data)
