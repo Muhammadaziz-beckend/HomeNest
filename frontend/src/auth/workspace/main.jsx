@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 
 import Header from './components/header.jsx'
 import ListHouses from './CRUD/list_houses.jsx'
@@ -11,8 +12,8 @@ import CreateHouse from './CRUD/create_house.jsx';
 
 
 const MainWorkspace = () => {
-
-
+    
+    
     return (
         <>
             <Header />
@@ -26,6 +27,15 @@ const MainWorkspace = () => {
 
 
                                     <ListHouses />
+
+                                </>
+                            } />
+
+                            <Route path='create_house/' element={
+                                <>
+
+
+                                    <CreateHouse />
 
                                 </>
                             } />

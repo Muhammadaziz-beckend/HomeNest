@@ -2,7 +2,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import *
 from rest_framework.filters import SearchFilter, OrderingFilter
-
+from django_filters.rest_framework.backends import DjangoFilterBackend
 
 from workspace.models import Order
 from account.models import User
@@ -42,7 +42,7 @@ class HousesSetView(PaginationGetAllMixin,ModelViewSetModification):
     queryset = House.objects.all()
     serializer_class = HousesSerializer
     pagination_class = PaginatorClass
-    filter_backends = [SearchFilter, OrderingFilter]
+    filter_backends = [SearchFilter,DjangoFilterBackend, OrderingFilter]
     ordering = ['price','date_add']
     search_fields = [
         "price",

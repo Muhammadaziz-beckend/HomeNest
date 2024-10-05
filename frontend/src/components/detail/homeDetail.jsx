@@ -73,8 +73,10 @@ const HomeDetail = () => {
 
       try {
 
-        const res = await axios.get(`http://127.0.0.1:8000/api/v1/date-register/${id}`)
+        const res = await axios.get(`http://127.0.0.1:8000/api/v1/date-register/${id}/`)
         setBookings(res?.data)
+        console.log(res?.data);
+        
       } catch (error) {
         console.log(error);
         

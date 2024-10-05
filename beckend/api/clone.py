@@ -1,6 +1,6 @@
 import random
 from django.db import transaction
-from main.models import House, Accommodation_options, City, Room_images, Room_Type
+from main.models import House, Accommodation_options, City, Region, Room_images, Room_Type
 
 def clone_house(house_id, num_clones):
     try:
@@ -30,6 +30,14 @@ def clone_house(house_id, num_clones):
 
                 # Рандомизация типа комнаты
                 cloned_house.room_type = random.choice(room_types)
+                
+                region = list(Region.objects.filter(cite__id=cloned_house.city.id))
+
+                cloned_house.region = random.choice(region)
+
+
+                cloned_house.price = random.randrange(1000,10000)
+
 
                 cloned_house.save()  # Сохраняем клонированный дом
 

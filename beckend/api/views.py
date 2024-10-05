@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.db import models
 from django.db.models import Q
 from django.core.paginator import Paginator
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.generics import get_object_or_404, GenericAPIView
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -17,9 +17,13 @@ from rest_framework.permissions import *
 from api.auth.permissions import Reade_or_Post
 from rest_framework.authtoken.models import Token
 from django.utils.translation import gettext_lazy as _
-from datetime import datetime
 from .permissions import *
-from .mixin import ModelViewSetModification, MultipleDestroyMixin
+from .mixin import (
+    GetCiteMixin,
+    ModelViewSetModification,
+    MultipleDestroyMixin,
+    SerializerByMethodMixin,
+)
 
 from main.models import (
     House,
@@ -34,6 +38,7 @@ from main.models import (
     BookRegister,
 )
 from .serializers import (
+    HousesCreateSerializer,
     HousesSerializer,
     HouseDetailSerializer,
     CitySerializer,
@@ -53,32 +58,49 @@ from .clone import clone_house
 from .pagination import PaginatorClass
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework.backends import DjangoFilterBackend
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 
-
-class ListCreateHouses(GenericAPIView):
+class HousesSetView(SerializerByMethodMixin, ModelViewSetModification):
     queryset = House.objects.all()
-    serializer_class = HousesSerializer
+    serializer_classes = {
+        "list": HousesSerializer,
+        "retrieve": HouseDetailSerializer,
+        "create": HousesCreateSerializer,
+        "update": HousesCreateSerializer,
+    }
     lookup_field = "id"
     search_fields = [
         "room_type",
         "city",
         "is_elevator",
     ]
+    user_create_product = True
     filter_backends = [SearchFilter, DjangoFilterBackend, OrderingFilter]
     ordering = ["price", "address", "date_add"]
     filter_class = FilterHome
     pagination_class = PaginatorClass
-    permission_classes = [Reade_or_Post]
+    permission_classes_by_active = {
+        "create": [IsAuthenticated, IsAdminUser],
+        "list": [AllowAny],
+        "update": [IsOwnerObj, IsAdminUser],
+        "retrieve": [AllowAny],
+        "destroy": [IsOwnerObj, IsAdminUser],
+    }
+    lookup_field = "id"
 
-    def get(self, request, *args, **kwargs):
+    def perform_create(self, serializer):
+        return super().perform_create(serializer)
+
+    def list(self, request, *args, **kwargs):
+        
         count = self.get_queryset().count()
         houses = self.filter_class(request.GET, self.get_queryset())
         if houses.is_valid():
             houses = houses.qs
         else:
             houses = self.get_queryset()
+        
         pagination = self.pagination_class()
         pagination_houses = pagination.paginate_queryset(houses, request, self)
 
@@ -92,105 +114,26 @@ class ListCreateHouses(GenericAPIView):
                 "data": serializer.data,
             }
         )
-
-
-# @api_view(["GET", "PATCH"])
-# @permission_classes([Reade_or_Post])
-# def detail_house(req, id):
-# house = get_object_or_404(House, id=id)
-
-# if req.method == "PATCH":
-#     serializer = HousesSerializer(
-#         instance=house, data=req.data, context={"request": req}, partial=True
-#     )
-#     serializer.is_valid(raise_exception=True)
-#     house = serializer.save()
-#     read_serializer = HouseDetailSerializer(
-#         instance=house, context={"request": req}
-#     )
-#     return Response(read_serializer.data)
-
-# serializer = HouseDetailSerializer(instance=house, context={"request": req})
-
-# return Response(serializer.data)
-
-
-class DetailHouseAPIView(UpdateModelMixin, GenericAPIView):
-    queryset = House.objects.all()
-    serializer_class = HouseDetailSerializer
-    permission_classes = [Reade_or_Post]
-    lookup_field = "id"
-
-    def get(self, request, id, *args, **kwargs):
-        house = get_object_or_404(House, id=id)
-
-        serializer = HouseDetailSerializer(instance=house, context={"request": request})
-
-        return Response(serializer.data)
-
-    def patch(self, request,id, *args, **kwargs):
-        house = get_object_or_404(House, id=id)
-
-        serializer = self.get_serializer(
-            instance=house, data=request.data, context={"request": request}, partial=True
-        )
-        serializer.is_valid(raise_exception=True)
-        house = serializer.save()
-        read_serializer = self.get_serializer(
-            instance=house, context={"request": request}
-        )
-        return Response(read_serializer.data)
-
-
-# @api_view(["GET", "POST"])
-# @permission_classes([Reade_or_Post])
-# def cite_list(req):
-# cites = City.objects.all()
-
-# if req.method == "POST":
-#     serializer = CitySerializer(data=req.data)
-#     serializer.is_valid(raise_exception=True)
-#     cites = serializer.save()
-
-#     return Response(cites.data, status=HTTP_201_CREATED)
-
-# serializer = CitySerializer(cites, context={"request": req}, many=True)
-
-# return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        # houses = self.get_queryset().first()
+        # print(houses.id,houses)
+        # clone_house(houses.id,50)
+        return super().retrieve(request, *args, **kwargs)
 
 
 
-class CiteViewSet(MultipleDestroyMixin,ModelViewSet):
+class CiteViewSet(MultipleDestroyMixin, ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = [Reade_or_Post]
 
 
-
-# class ListCiteAPIView(ListModelMixin, CreateModelMixin, GenericAPIView):
-#     queryset = City.objects.all()
-#     serializer_class = CitySerializer
-#     permission_classes = [Reade_or_Post]
-
-#     def get(self, request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-
-#     def post(self, request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
-
-
-class ListRegion(GenericAPIView):
+class RegionViewSet(GetCiteMixin, ReadOnlyModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
-
-    def get(self, request, *args, **kwargs):
-        region = self.get_queryset()
-
-        serializer = self.get_serializer(
-            region, context={"request": request}, many=True
-        )
-
-        return Response(serializer.data)
+    lookup_field = "id"
+    permission_classes = [AllowAny]
 
 
 class ListRoom_type(ListModelMixin, GenericAPIView):
@@ -260,7 +203,7 @@ class ListHouseRulesAPIView(ListModelMixin, GenericAPIView):
 
 
 class BookRegisterUser(CreateModelMixin, GenericAPIView):
-    queryset = BookRegister.objects
+    queryset = BookRegister.objects.all().order_by("date_add")
     serializer_classes = {
         "get": BookRegisterSerializer,
         "post": CreateBookRegisterSerializer,
@@ -385,42 +328,26 @@ class BookRegisterUser(CreateModelMixin, GenericAPIView):
         return serializer(*args, **kwargs)
 
 
-
 class BookRegisterSetView(ModelViewSetModification):
     queryset = BookRegister.objects.all()
     serializer_class = BookRegisterSerializer
     lookup_field = "id"
     permission_classes_by_active = {
-        'create':[IsAuthenticated,IsAdminUser],
-        'list':[AllowAny],
-        'update':[IsAuthenticated,IsAdminUser],
-        'retrieve':[AllowAny],
-        'destroy':[IsAuthenticated,IsAdminUser]
+        "create": [IsAuthenticated, IsAdminUser],
+        "list": [AllowAny],
+        "update": [IsAuthenticated, IsAdminUser],
+        "retrieve": [AllowAny],
+        "destroy": [IsAuthenticated, IsAdminUser],
     }
 
-    
+    def retrieve(self, request, id, *args, **kwargs):
+        house = House.objects.get(id=id)
 
+        book_register = house.book_register
 
-# class ListBookRegister(ListModelMixin, GenericAPIView):
-#     queryset = BookRegister.objects.all()
-#     serializer_class = BookRegisterSerializer
-#     lookup_field = "id"
+        serializer = self.get_serializer(
+            book_register,
+            many=True,
+        )
 
-#     def get(self, request, *args, **kwargs):
-#         return self.list(request, *args, **kwargs)
-
-
-# class GetBookRegister(RetrieveModelMixin, GenericAPIView):
-#     queryset = House.objects.all()
-#     serializer_class = HouseDetailSerializer
-#     lookup_field = "id"
-
-#     def get(self, request, id, *args, **kwargs):
-
-#         house = get_object_or_404(self.get_queryset(), id=id)
-
-#         book_registers = house.book_register
-
-#         book_reg = CreateBookRegisterSerializer(book_registers, many=True)
-
-#         return Response(book_reg.data)
+        return Response(serializer.data)

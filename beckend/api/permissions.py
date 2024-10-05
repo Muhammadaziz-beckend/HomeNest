@@ -7,8 +7,9 @@ class IsOwnerObj(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
 
         return bool (
-            request.user.id == obj.user.id or request.method in permissions.SAFE_METHODS or request.user.is_superuser
-
+            request.user.id == obj.user.id 
+            or request.method in permissions.SAFE_METHODS 
+            or request.user.is_superuser
         )
 
 

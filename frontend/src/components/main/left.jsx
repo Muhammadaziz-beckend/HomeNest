@@ -68,7 +68,7 @@ const Left = ({setLeftFilter}) => {
     }, [])
 
 
-    const headSubmit = () => {
+    const headSubmit = (event) => {
         event.preventDefault()
 
         let formGet = new FormData(event.target)
@@ -154,19 +154,6 @@ const Left = ({setLeftFilter}) => {
                         ))}
                     </label>
 
-                    {/* <label htmlFor="" className="Hotel">
-                        <h3>В помещении</h3>
-
-                        {dataSectionInRoom.map(i => (
-
-                            <label className="check">
-                                <input type="checkbox" name='in-room' id={i?.id} value={i?.id} className="checkbox" />
-                                <span className="fuck_checkbox"></span>
-                                {i.name}
-                            </label>
-                        ))}
-                    </label> */}
-
 
                     <label htmlFor="" className="Hotel">
                         <h3>На территории</h3>
@@ -181,18 +168,6 @@ const Left = ({setLeftFilter}) => {
                         ))}
                     </label>
 
-                    {/* <label htmlFor="" className="Hotel">
-                        <h3>На территории</h3>
-
-                        {dataSectionInTheTerritory.map(i => (
-
-                            <label className="check">
-                                <input type="checkbox" name='in-the-territory' id={i?.id} value={i?.id} className="checkbox" />
-                                <span className="fuck_checkbox"></span>
-                                {i.name}
-                            </label>
-                        ))}
-                    </label> */}
 
 
                     <label htmlFor="" className="Hotel">

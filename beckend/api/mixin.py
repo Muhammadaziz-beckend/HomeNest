@@ -7,6 +7,9 @@ from rest_framework import status
 import django
 from datetime import date
 
+from account.models import User
+from api.serializers import RegionSerializer
+
 
 class PetitionsByActive:
     permission_classes_by_active = {}
@@ -14,7 +17,7 @@ class PetitionsByActive:
     def get_permissions(self):
         permission_classes = self.permission_classes_by_active.get(self.action, None)
         if self.action == "partial_update" or self.action == "update_partial":
-            permission_classes = self.permission_classes_by_action.get("update", None)
+            permission_classes = self.permission_classes_by_active.get("update", None)
         if permission_classes is None:
             permission_classes = self.permission_classes
 
@@ -25,6 +28,29 @@ class MultipleDestroyMixinSerializer(serializers.Serializer):
     ids = serializers.ListSerializer(
         child=serializers.IntegerField(validators=[MinValueValidator(1)])
     )
+
+
+class GetCiteMixinSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=True)
+
+
+class GetCiteMixin:
+
+    @action(methods=["POST"], detail=False, url_path="get-region-by-city")
+    def get_region_id(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        queryset = self.get_queryset().filter(cite=serializer.data["id"])
+
+        serialize = RegionSerializer(queryset, many=True)
+        return Response(serialize.data)
+
+    def get_serializer_class(self):
+        path = self.request.path.split("/")[-2]
+
+        if path == "get-region-by-city":
+            return GetCiteMixinSerializer
+        return super().get_serializer_class()
 
 
 class MultipleDestroyMixin:
@@ -73,11 +99,11 @@ class PublicThisYear:
 
 class PaginationGetAllMixin:
 
-    @action(['GET'],False,'all-items')
-    def all_items(self,request):
+    @action(["GET"], False, "all-items")
+    def all_items(self, request):
         queryset = self.filter_queryset(self.get_queryset().filter(user=request.user))
 
-        serializer = self.get_serializer(queryset,many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
@@ -91,11 +117,25 @@ class PaginationGetAllMixin:
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+class SerializerByMethodMixin:
+    serializer_classes = {}
+
+    def get_serializer_class(self):
+        if self.action == 'partial_update' or self.action == 'update_partial':
+            return self.serializer_classes.get('update', self.serializer_class)
+        return self.serializer_classes.get(self.action, self.serializer_class)
+
+class SetUserProduct:
+    user_create_product = False
+
+    def perform_create(self, serializer):
+        if self.user_create_product:
+            user =  User.objects.get(phone=self.request.user.phone)
+            serializer.save(user=user)
+        else:
+            serializer.save()
+
 class ModelViewSetModification(
-    MultipleDestroyMixin, PublicThisYear, PetitionsByActive, ModelViewSet
+    SetUserProduct,MultipleDestroyMixin, PublicThisYear, PetitionsByActive, ModelViewSet
 ):
     pass
-
-
-# class ModelViewSetRetrieveModification():
-#     pass

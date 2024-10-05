@@ -14,8 +14,8 @@ from main.models import (
     Region,
     Yard_equipment,
     Room_images,
-    Room_Type, BookRegister,
-    
+    Room_Type,
+    BookRegister,
 )
 
 
@@ -46,7 +46,7 @@ class Accommodation_optionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Accommodation_options
-        fields = ['id', 'name', 'house_count']
+        fields = ["id", "name", "house_count"]
 
     def get_house_count(self, obj):
         return obj.house_count
@@ -155,13 +155,13 @@ class HousesSerializer(serializers.ModelSerializer):
             "price",
             "city",
             "region",
-            'in_room',
+            "in_room",
             "included_in_the_price",
             "for_indoor_relaxation",
             "kitchen_equipment",
             "yard_equipment",
             "bedrooms",
-            'accommodation_options',
+            "accommodation_options",
             "number_of_double_beds",
             "number_of_separate_beds",
             "total_area",
@@ -196,6 +196,78 @@ class HousesSerializer(serializers.ModelSerializer):
         return house
 
 
+class HousesCreateSerializer(serializers.ModelSerializer):
+    city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
+    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
+    images = RoomImageSerializer(many=True, required=False)
+
+    class Meta:
+        model = House
+        fields = (
+            "id",
+            "images",
+            "address",  # Первым идет адрес
+            "street_number",  # Затем номер улицы
+            "price",
+            "city",
+            "region",
+            "in_room",
+            "bathroom",
+            "house_rules",
+            "included_in_the_price",
+            "for_indoor_relaxation",
+            "in_the_territory",
+            "kitchen_equipment",
+            "yard_equipment",
+            "bedrooms",
+            "near",
+            "accommodation_options",
+            "number_of_double_beds",
+            "number_of_separate_beds",
+            "total_area",
+            "floors",
+            "is_elevator",
+            "room_type",
+            "descriptions1",
+            "descriptions5",
+        )
+
+    def create(self, validated_data):
+
+        images_data = self.context["request"].FILES.getlist(
+            "images"
+        )  # Получаем изображения из request.FILES
+
+        # Извлекаем данные ManyToMany полей и удаляем их из validated_data
+        bathroom_data = validated_data.pop("bathroom")
+        included_in_the_price_data = validated_data.pop("included_in_the_price")
+        for_indoor_relaxation_data = validated_data.pop("for_indoor_relaxation")
+        house_rules_data = validated_data.pop("house_rules")
+        in_room_data = validated_data.pop("in_room")
+        near_data = validated_data.pop("near")
+        in_the_territory_data = validated_data.pop("in_the_territory")
+        kitchen_equipment_data = validated_data.pop("kitchen_equipment")
+        yard_equipment_data = validated_data.pop("yard_equipment")
+
+        # Создаём объект дома
+        house = House.objects.create(**validated_data)
+
+        for image in images_data:
+            Room_images.objects.create(house=house, image=image)
+        # Устанавливаем связи для ManyToMany полей
+        house.bathroom.set(bathroom_data)
+        house.included_in_the_price.set(included_in_the_price_data)
+        house.for_indoor_relaxation.set(for_indoor_relaxation_data)
+        house.house_rules.set(house_rules_data)
+        house.in_room.set(in_room_data)
+        house.near.set(near_data)
+        house.in_the_territory.set(in_the_territory_data)
+        house.kitchen_equipment.set(kitchen_equipment_data)
+        house.yard_equipment.set(yard_equipment_data)
+
+        return house
+
+
 class HouseDetailSerializer(serializers.ModelSerializer):
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
     region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
@@ -215,7 +287,7 @@ class HouseDetailSerializer(serializers.ModelSerializer):
             "street_number",
             "price",
             "city",
-            'in_room',
+            "in_room",
             "region",
             "bathroom",
             "included_in_the_price",
@@ -226,9 +298,9 @@ class HouseDetailSerializer(serializers.ModelSerializer):
             "number_of_double_beds",
             "number_of_separate_beds",
             "total_area",
-            'total_floors',
+            "total_floors",
             "floors",
-            'total_guests',
+            "total_guests",
             "is_elevator",
             "descriptions1",
             "descriptions5",
@@ -244,18 +316,15 @@ class BookRegisterSerializer(serializers.ModelSerializer):
     result_prise = serializers.SerializerMethodField()  # Новое поле
     prise = serializers.SerializerMethodField()  # Новое поле
 
-
     class Meta:
         model = BookRegister
         fields = "__all__"
 
     def get_result_prise(self, obj):
-        return obj.result_prise # Возвращаем результат метода
+        return obj.result_prise  # Возвращаем результат метода
 
-    def get_prise(self,obj):
+    def get_prise(self, obj):
         return obj.prise
-
-
 
 
 class CreateBookRegisterSerializer(serializers.ModelSerializer):
@@ -264,9 +333,9 @@ class CreateBookRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BookRegister
-        fields = ['data_start','data_end','home']
+        fields = ["data_start", "data_end", "home"]
 
     def save(self, **kwargs):
         # Получаем пользователя из контекста запроса и передаем в save()
-        kwargs['user'] = self.context['request'].user
+        kwargs["user"] = self.context["request"].user
         return super().save(**kwargs)

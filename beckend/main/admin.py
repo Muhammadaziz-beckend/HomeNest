@@ -144,8 +144,8 @@ class Room_imagesAdmin(admin.ModelAdmin):
 
 @admin.register(BookRegister)
 class BookRegisterAdmin(admin.ModelAdmin):
-    list_display = ('id','data_start','data_end','result_prise', 'prise','home' ,'user__phone')
-    list_display_links = ('id','data_start','data_end','result_prise','prise','home','user__phone')
+    list_display = ('id','data_start','data_end','result_prise', 'prise','home' ,'user__phone','date_add')
+    list_display_links = ('id','data_start','data_end','result_prise','prise','home','user__phone','date_add')
     search_fields = ['user__first_name','user__phone']
 
     def result_prise(self, obj):

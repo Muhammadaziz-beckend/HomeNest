@@ -111,7 +111,7 @@ class City(DateModelAbstract):
 class Region(DateModelAbstract):
     name = models.CharField(verbose_name="Область", max_length=50)
     cite = models.ForeignKey(
-        "City", verbose_name=("Выберите город"), on_delete=models.CASCADE
+        "City",related_name='region_cite' ,verbose_name=("Выберите город"), on_delete=models.CASCADE
     )
 
     def __str__(self) -> str:
@@ -192,8 +192,7 @@ class House(DateModelAbstract):
     )
     room_type = models.ForeignKey(
         "Room_Type",
-        models.SET_NULL,
-        null=True,
+        models.CASCADE,
         related_name="room",
         verbose_name="количество комнат",
     )
@@ -299,7 +298,7 @@ class BookRegister(models.Model):
         related_name="book_register",
     )
 
-    date_add = models.DateField("Дата добавления", auto_now_add=True, null=True)
+    date_add = models.DateField("Дата добавления", auto_now_add=True)
 
     @property
     def prise(self):

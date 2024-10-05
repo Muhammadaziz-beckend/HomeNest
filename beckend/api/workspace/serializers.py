@@ -9,3 +9,6 @@ class OrdersSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'order_total','orders','total_order_many']
 
     
+# class MultipleDeleteSerializer(serializers.Serializer):
+
+#     ids = serializers.ListField()

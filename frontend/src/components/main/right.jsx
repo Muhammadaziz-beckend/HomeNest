@@ -95,7 +95,7 @@ const Right = ({ props, refHome, citeInfo, regionInfo }) => {
                         <div className="center">
                             <h3>{i?.room_type}-Комнатная квартира</h3>
                             <p> Город-{cite.find(item => item?.id == i?.city)?.name || "Неизвестный город"},<br />
-                                {region.find(item => item?.id == i?.city)?.name || "Неизвестная область"}ская Область,<br />
+                                {region.find(item => item?.id == i?.region)?.name || "Неизвестная область"}ская Область,<br />
                                 {i?.address} улица, {i?.street_number}
                                 <br />
                                 {accommodationOptions?.find(item => item?.id == i?.accommodation_options)?.name}
