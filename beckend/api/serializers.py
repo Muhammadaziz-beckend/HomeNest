@@ -93,6 +93,7 @@ class Included_in_the_priceSerializer(serializers.ModelSerializer):
         model = Included_in_the_price
         fields = "__all__"
 
+
 # bathroom
 # ванная комната
 class For_indoor_relaxationSerializer(serializers.ModelSerializer):
@@ -287,18 +288,22 @@ class HouseDetailSerializer(serializers.ModelSerializer):
             "street_number",
             "price",
             "city",
+            "house_rules",
             "in_room",
             "region",
             "bathroom",
+            "in_the_territory",
             "included_in_the_price",
             "for_indoor_relaxation",
             "kitchen_equipment",
             "yard_equipment",
             "bedrooms",
+            "accommodation_options",
             "number_of_double_beds",
             "number_of_separate_beds",
             "total_area",
             "total_floors",
+            "near",
             "floors",
             "total_guests",
             "is_elevator",
