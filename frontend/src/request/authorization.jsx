@@ -1,13 +1,12 @@
 import axios from "axios"
 
 
-const Authorization = async (url, token, data = false, body = null) => {
+const Authorization = async (url, token, data = false, body = null,json=true) => {
 
     const headers = {
         'Authorization': `Token ${token}`,
-        'Content-Type': 'application/json',
+        'Content-Type': json ? 'application/json' : 'multipart/form-data',
     }
-
     let res = null
 
     try {

@@ -93,7 +93,7 @@ class Included_in_the_priceSerializer(serializers.ModelSerializer):
         model = Included_in_the_price
         fields = "__all__"
 
-
+# bathroom
 # ванная комната
 class For_indoor_relaxationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -199,13 +199,13 @@ class HousesSerializer(serializers.ModelSerializer):
 class HousesCreateSerializer(serializers.ModelSerializer):
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
     region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
-    images = RoomImageSerializer(many=True, required=False)
+    # images = RoomImageSerializer(many=True, required=True)
 
     class Meta:
         model = House
         fields = (
             "id",
-            "images",
+            # "images",
             "address",  # Первым идет адрес
             "street_number",  # Затем номер улицы
             "price",
@@ -228,8 +228,8 @@ class HousesCreateSerializer(serializers.ModelSerializer):
             "floors",
             "is_elevator",
             "room_type",
-            "descriptions1",
-            "descriptions5",
+            # "descriptions1",
+            # "descriptions5",
         )
 
     def create(self, validated_data):

@@ -769,7 +769,7 @@ a {
                 &:nth-child(1) {
                     background-color: rgb(238, 177, 45);
 
-                    
+
                 }
 
                 &:nth-child(2) {
@@ -791,4 +791,168 @@ a {
     margin-top: 20px;
 
     /* display: flex; */
+}
+
+.containerForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+
+}
+
+.formCreateUpdate {
+
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    h2 {
+
+        text-align: center;
+    }
+
+    label {
+
+        .inputFile {
+            padding: 10px 0;
+            border: none;
+        }
+
+        input {
+            display: flex;
+            flex-direction: column;
+
+            width: 100%;
+
+            padding: 15px;
+            border-radius: 5px;
+            outline: none;
+
+            border: none;
+            border: 2px solid rgb(209, 209, 209);
+
+            background: rgb(255, 255, 255);
+
+            &::placeholder {
+
+                color: rgb(125, 125, 125);
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 16px;
+            }
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+
+            width: 100%;
+            outline: none;
+
+            border: none;
+            border: 1.3px solid #e0dddd;
+
+            padding: 15px;
+
+            border-radius: 5px;
+            background: rgb(252, 252, 252);
+
+            color: rgb(57, 57, 57);
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 16px;
+            letter-spacing: 0%;
+        }
+    }
+
+    .separator {
+
+        /* display: flex;
+        gap: 8px; */
+
+        input {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            width: 180px;
+        }
+
+        .blokRegLeftInput {
+            display: flex;
+            gap: 8px;
+        }
+    }
+
+
+    .selectLabelSeparator {
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        select {
+            width: 100%;
+
+            outline: none;
+            border: none;
+            border: 1.3px solid #e0dddd;
+
+            padding: 15px;
+
+            border-radius: 5px;
+            background: rgb(252, 252, 252);
+        }
+    }
+
+    .checkboxLabel {
+
+        display: flex;
+        padding: 0px;
+        align-items: center;
+
+        color: rgba(57, 57, 57, 0.87);
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 16px;
+        letter-spacing: 0%;
+
+        input {
+
+            display: none;
+            transition: all .5s ease;
+
+            &:checked+.fake {
+                transition: all 0.5s ease;
+                background-color: #0093ff;
+                border-color: #0093ff;
+            }
+
+            &:checked+.fake:before {
+                content: "";
+                /* Добавим галочку или другой символ по желанию */
+                transition: all 0.5s ease;
+                color: white;
+                font-size: 14px;
+            }
+        }
+
+        .fake {
+
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+
+        }
+    }
 }

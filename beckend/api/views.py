@@ -26,8 +26,12 @@ from .mixin import (
 )
 
 from main.models import (
+    Bathroom,
+    For_indoor_relaxation,
     House,
     City,
+    Included_in_the_price,
+    Kitchen_equipment,
     Region,
     Room_Type,
     Accommodation_options,
@@ -36,12 +40,17 @@ from main.models import (
     Near,
     House_rules,
     BookRegister,
+    Yard_equipment,
 )
 from .serializers import (
+    BathroomSerializer,
+    For_indoor_relaxationSerializer,
     HousesCreateSerializer,
     HousesSerializer,
     HouseDetailSerializer,
     CitySerializer,
+    Included_in_the_priceSerializer,
+    Kitchen_equipmentSerializer,
     RegionSerializer,
     Room_TypeSerializer,
     Accommodation_optionsSerializer,
@@ -51,6 +60,7 @@ from .serializers import (
     House_rulesSerializer,
     BookRegisterSerializer,
     CreateBookRegisterSerializer,
+    Yard_equipmentSerializer,
 )
 from account.models import User
 from rest_framework.status import *
@@ -128,6 +138,30 @@ class CiteViewSet(MultipleDestroyMixin, ModelViewSet):
     serializer_class = CitySerializer
     permission_classes = [Reade_or_Post]
 
+class IncludedInThePriceViewSet(ModelViewSet):
+    queryset = Included_in_the_price.objects.all()
+    serializer_class = Included_in_the_priceSerializer
+    permission_classes = [Reade_or_Post]
+
+class For_indoor_relaxationViewSet(ModelViewSet):
+    queryset = For_indoor_relaxation.objects.all()
+    serializer_class = For_indoor_relaxationSerializer
+    permission_classes = [Reade_or_Post]
+
+class KitchenEquipmentViewSet(ModelViewSet):
+    queryset = Kitchen_equipment.objects.all()
+    serializer_class = Kitchen_equipmentSerializer
+    permission_classes = [Reade_or_Post]
+
+class YardEquipmentViewSet(ModelViewSet):
+    queryset = Yard_equipment.objects.all()
+    serializer_class = Yard_equipmentSerializer
+    permission_classes = [Reade_or_Post]
+
+class BathroomViewSet(ModelViewSet):
+    queryset = Bathroom.objects.all()
+    serializer_class = BathroomSerializer
+    permission_classes = [Reade_or_Post]
 
 class RegionViewSet(GetCiteMixin, ReadOnlyModelViewSet):
     queryset = Region.objects.all()
@@ -168,14 +202,6 @@ class ListIn_the_territory(ListModelMixin, GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
-# @api_view()
-# def near_list(req):
-# near = Near.objects.all()
-
-# serializer = NearSerializer(near, many=True, context={"request": req})
-
-# return Response(serializer.data)
-
 
 class ListNearAPIView(ListModelMixin, GenericAPIView):
     queryset = Near.objects.all()
@@ -183,15 +209,6 @@ class ListNearAPIView(ListModelMixin, GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-# @api_view()
-# def house_rules_list(req):
-# house_rules = House_rules.objects.all()
-
-# serializer = House_rulesSerializer(house_rules, many=True, context={"request": req})
-
-# return Response(serializer.data)
 
 
 class ListHouseRulesAPIView(ListModelMixin, GenericAPIView):
