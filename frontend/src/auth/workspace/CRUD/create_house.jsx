@@ -209,7 +209,6 @@ const CreateHouse = () => {
                 </label>
 
                 <label htmlFor="" className="separator">
-                    <span>Количество кроватей</span>
 
                     <div className="blokRegLeftInput">
                         <div className="leftInput">

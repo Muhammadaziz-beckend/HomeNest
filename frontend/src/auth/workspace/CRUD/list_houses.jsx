@@ -124,7 +124,7 @@ const ListHouses = () => {
                                 <h3>{i?.price} c <br /> <span>Сутки</span></h3>
                                 <Link to={`/home/${i?.id}`} className='first button'>Смотреть</Link>
                                 <div className="blok_user_owner">
-                                    <Link className="button">Изменить</Link>
+                                    <Link className="button" to={`/auth/landlord/update/${i?.id}`}>Изменить</Link>
                                     <button className="button" onClick={() => {setDelete(i?.id);setDeleteBlok(true) }}>Удалить</button>
                                 </div>
                             </div>

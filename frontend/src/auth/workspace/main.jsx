@@ -12,8 +12,8 @@ import CreateHouse from './CRUD/create_house.jsx';
 
 
 const MainWorkspace = () => {
-    
-    
+
+
     return (
         <>
             <Header />
@@ -39,6 +39,9 @@ const MainWorkspace = () => {
 
                                 </>
                             } />
+
+                            <Route path='update/:id' element={<UpdateHouses />} />
+
 
                         </Routes>
                     </div>

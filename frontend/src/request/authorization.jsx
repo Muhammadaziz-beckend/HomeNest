@@ -1,7 +1,7 @@
 import axios from "axios"
 
 
-const Authorization = async (url, token, data = false, body = null,json=true) => {
+const Authorization = async (url, token, data = false, body = null,json=true,method='POST') => {
 
     const headers = {
         'Authorization': `Token ${token}`,
@@ -11,7 +11,7 @@ const Authorization = async (url, token, data = false, body = null,json=true) =>
 
     try {
         res = await axios({
-            method: body ? 'POST' : 'GET', // Метод запроса: POST если есть body, иначе GET
+            method: body ? method : 'GET', // Метод запроса: POST если есть body, иначе GET
             url: url,
             headers: headers,
             data: body // Тело запроса (будет отправлено только для POST/PUT запросов)
