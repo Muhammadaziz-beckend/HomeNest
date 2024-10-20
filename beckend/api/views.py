@@ -105,6 +105,7 @@ class HousesSetView(SerializerByMethodMixin, ModelViewSetModification):
     def list(self, request, *args, **kwargs):
         
         count = self.get_queryset().count()
+        # clone_house(1,10)
         houses = self.filter_class(request.GET, self.get_queryset())
         if houses.is_valid():
             houses = houses.qs
@@ -128,7 +129,7 @@ class HousesSetView(SerializerByMethodMixin, ModelViewSetModification):
     def retrieve(self, request, *args, **kwargs):
         # houses = self.get_queryset().first()
         # print(houses.id,houses)
-        # clone_house(houses.id,50)
+        # clone_house(houses.id,25)
         return super().retrieve(request, *args, **kwargs)
 
 
