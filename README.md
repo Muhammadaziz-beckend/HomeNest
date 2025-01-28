@@ -20,3 +20,39 @@ HouseNest - это веб-приложение для удобного упра�
 
 Модерация пользователей.
 Управление объявлениями.
+
+## Технологии
+### Backend: Django REST Framework
+### Frontend: React.js
+База данных: SQL
+Docker: для контейнеризации приложения.
+Swagger: для документации API.
+
+## Установка и запуск
+### 1.Клонируйте репозиторий:
+``` copy
+git clone https://github.com/Muhammadaziz-beckend/HomeNest
+cd HomeNest
+```
+
+### Настройка Backend:
+``` copy
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements.txt
+```
+
+``` copy
+python manage.py migrate
+```
+``` copy
+python manage.py runserver
+```
+
+### Настройка Frontend:
+``` copy
+npm install
+```
+``` copy
+npm start
+```
